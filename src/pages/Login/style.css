@@ -1,0 +1,34 @@
+@import "../../styles/global.css";
+
+/* layout mobile */
+.login-mbl {
+  display: flex;
+  background-color: var(--base-05);
+  height: 100vh;
+}
+
+.login-form {
+  height: 100%;
+  flex: 1;
+}
+
+.login-input-wrap {
+  flex: 1;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.centralized {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+}
+
+.reset-link {
+  text-align: end;
+  margin-top: -0.625rem;
+}
+
+/* layout desktop */

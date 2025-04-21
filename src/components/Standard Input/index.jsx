@@ -3,7 +3,7 @@ import "./style.css";
 
 function StandardInput({ label, value, onChange, placeholder }) {
   return (
-    <div className="flex-col">
+    <div className="flex-col std-input-wrap">
       <label className="">{label}</label>
       <input
         type="text"

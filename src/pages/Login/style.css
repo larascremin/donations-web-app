@@ -1,10 +1,16 @@
 @import "../../styles/global.css";
 
-/* layout mobile */
 .login-mbl {
-  display: flex;
   background-color: var(--base-05);
   height: 100vh;
+  justify-content: end;
+}
+
+.login-vectors {
+  height: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
 }
 
 .login-form {
@@ -20,10 +26,15 @@
   gap: 1.25rem;
 }
 
+.login-button-wrap {
+  gap: 0.5rem;
+}
+
 .centralized {
   width: 100%;
   justify-content: center;
   text-align: center;
+  gap: 0.5rem;
 }
 
 .reset-link {
@@ -31,4 +42,16 @@
   margin-top: -0.625rem;
 }
 
-/* layout desktop */
+.login-v01 {
+  transform: rotate(30deg);
+  margin: 0 0 2px -11px;
+}
+
+.login-v02 {
+  margin: 0 -10px -10px 0;
+}
+
+.login-v03 {
+  transform: rotate(-20deg);
+  margin: 0 0 -5px -11px;
+}

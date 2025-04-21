@@ -1,6 +1,4 @@
-.flex-col {
-  display: flex;
-  flex-direction: column;
+.psw-input-wrap {
   gap: 0.5rem;
 }
 

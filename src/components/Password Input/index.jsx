@@ -6,7 +6,7 @@ function PasswordInput({ label, value, onChange }) {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="flex-col">
+    <div className="flex-col psw-input-wrap">
       <label className="">{label}</label>
       <div className="input-wrap">
         <input

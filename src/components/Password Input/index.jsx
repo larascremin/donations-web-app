@@ -10,7 +10,7 @@ function PasswordInput({ label, value, onChange }) {
       <label className="">{label}</label>
       <div className="input-wrap">
         <input
-          type="password"
+          type={showPassword ? "text" : "password"}
           value={value}
           onChange={onChange}
           className="psw-input"

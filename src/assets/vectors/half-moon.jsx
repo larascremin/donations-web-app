@@ -1,10 +1,10 @@
 import "../../styles/colors.css";
 
-const HALF_MOON_SGV = ({ width, height, color, className }) => (
+const HALF_MOON_SGV = ({ color, className }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={width}
-    height={height}
+    width="92"
+    height="48"
     viewBox="0 0 92 48"
     fill={color}
     className={className}

@@ -1,10 +1,10 @@
 import "../../styles/colors.css";
 
-const CIRCLE_SVG = ({ width, height, color, className }) => (
+const PLUS_SVG = ({ color, className }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={width}
-    height={height}
+    width="103"
+    height="100"
     viewBox="0 0 103 100"
     fill={color}
     className={className}
@@ -18,4 +18,4 @@ const CIRCLE_SVG = ({ width, height, color, className }) => (
   </svg>
 );
 
-export default CIRCLE_SVG;
+export default PLUS_SVG;

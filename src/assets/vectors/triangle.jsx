@@ -1,10 +1,10 @@
 import "../../styles/colors.css";
 
-const TRIANGLE_SVG = ({ width, height, color, className }) => (
+const TRIANGLE_SVG = ({ color, className }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={width}
-    height={height}
+    width="88"
+    height="76"
     viewBox="0 0 88 76"
     fill={color}
     className={className}

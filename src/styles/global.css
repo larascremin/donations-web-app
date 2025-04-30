@@ -2,7 +2,6 @@
 @import "./colors.css";
 
 /* config */
-
 * {
   overflow: hidden;
 }
@@ -32,6 +31,7 @@ a {
   text-decoration: underline;
   font-weight: 500;
   font-size: 0.875rem;
+  cursor: pointer;
 }
 
 h6 {
@@ -49,17 +49,18 @@ h6 {
   border-radius: 0.625rem;
   padding: 0.75rem 1.5rem;
   font-weight: 500;
-  letter-spacing: 0.08rem;
+  letter-spacing: 0.06rem;
   font-family: inherit;
   font-size: 1rem;
-}
-
-.resized-logo {
-  height: 3.125rem;
+  cursor: pointer;
 }
 
 /* classes responsibilidade */
 .flex-col {
   display: flex;
   flex-direction: column;
+}
+
+.sob-overflow {
+  overflow: visible;
 }

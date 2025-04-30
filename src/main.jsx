@@ -11,6 +11,8 @@ import DonationForm from "./pages/Donation Form";
 import Profile from "./pages/Profile";
 import Errors from "./pages/Errors";
 import List from "./pages/List";
+import Reset from "./pages/Reset";
+import NewPassowrd from "./pages/New Password";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -18,7 +20,9 @@ createRoot(document.getElementById("root")).render(
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/auth" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/auth/reset-password" element={<Reset />} />
+        <Route path="/auth/register" element={<Register />} />
+        <Route path="/auth/new-password" element={<NewPassowrd />} />
         <Route path="/list" element={<List />} />
         <Route path="/donation/org" element={<OrgDonations />} />
         <Route path="/donation/user" element={<UserDonation />} />

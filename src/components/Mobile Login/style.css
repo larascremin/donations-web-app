@@ -1,0 +1,29 @@
+.login-vectors {
+  height: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+}
+
+.login-v01 {
+  transform: rotate(30deg);
+  margin: 0 0 3px -11px;
+}
+
+.login-v02 {
+  transform: scale(0.8);
+  margin: 0 -12px -15px 0;
+  transform-origin: center;
+}
+
+.login-v03 {
+  transform: scale(0.8) rotate(-20deg);
+  margin: 0 -10px -15px -28px;
+  transform-origin: center;
+}
+
+.login-mbl {
+  background-color: var(--base-05);
+  height: 100vh;
+  justify-content: end;
+}

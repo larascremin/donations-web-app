@@ -1,0 +1,59 @@
+.login-left {
+  background-color: var(--base-05);
+  height: 100vh;
+  justify-content: space-between;
+}
+
+.decoration-text {
+  color: var(--base-01);
+  font-weight: 100;
+  font-size: 2rem;
+  letter-spacing: 0.4px;
+  margin: 14vh;
+}
+
+.login-right {
+  justify-content: center;
+  align-items: center;
+  padding: 14vh 10vw;
+}
+
+.decoration-text span {
+  color: var(--l-pink);
+  font-weight: 700;
+}
+
+.login-vectors {
+  height: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+}
+
+.login-dsk {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.login-dsk .login-v01 {
+  transform: scale(3.4) rotate(-30deg);
+  margin: 0 72px 68px 0;
+  transform-origin: center;
+}
+
+.login-dsk .login-v02 {
+  transform: scale(3);
+  margin: 0 0 67px 88px;
+  transform-origin: center;
+}
+
+.login-dsk .login-v03 {
+  transform: scale(2) rotate(34deg);
+  margin: 0 0 50px 93px;
+  transform-origin: center;
+}
+
+.login-v04 {
+  transform: rotate(30deg);
+  margin: 0 0 200px 0;
+}

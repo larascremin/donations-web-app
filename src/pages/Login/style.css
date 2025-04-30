@@ -1,11 +1,5 @@
 @import "../../styles/global.css";
 
-.login-mbl {
-  background-color: var(--base-05);
-  height: 100vh;
-  justify-content: end;
-}
-
 .login-vectors {
   height: 80px;
   display: flex;
@@ -54,21 +48,10 @@
 
 /* layout desktop */
 
-.login-dsk {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-
 .login-left {
   background-color: var(--base-05);
   height: 100vh;
   justify-content: space-between;
-}
-
-.login-right {
-  justify-content: center;
-  align-items: center;
-  padding: 14vh 10vw;
 }
 
 .login-dsk .login-form {

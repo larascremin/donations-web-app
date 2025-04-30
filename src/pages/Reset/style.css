@@ -1,0 +1,15 @@
+.button-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.button-wrapper a {
+  text-align: right;
+}
+
+.reset-form {
+  margin-top: 4rem;
+  justify-content: space-between;
+  gap: 4rem;
+}

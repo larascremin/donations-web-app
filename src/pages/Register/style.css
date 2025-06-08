@@ -1,0 +1,96 @@
+@import "../../styles/global.css";
+
+.register-form {
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* (Tabs: SOU INSTITUIÇÃO / SOU DOADOR) */
+.account-type-selector {
+  display: flex;
+  margin: 1.5rem 0px;
+  background-color: transparent;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--base-03, #ccc);
+}
+
+.account-type-button {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  border: none;
+  background-color: var(--base-01, #fff);
+  color: var(--base-05, #333);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+  line-height: 1.2;
+}
+
+.account-type-button:first-child {
+  border-right: 1px solid var(--base-03, #ccc);
+}
+
+.account-type-button.active {
+  background-color: var(--base-05, #333);
+  color: var(--base-01, #fff);
+  border: 5px solid var(--base-01);
+  border-radius: 10px;
+}
+
+.account-type-button:not(.active):hover {
+  background-color: var(--base-02, #f0f0f0);
+  border: 3px solid transparent;
+}
+
+.register-input-wrap {
+  flex: 1;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.register-button-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.register-button-wrap .std-button {
+  width: 100%;
+}
+
+.register-button-wrap h6 {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--text-secondary, #555);
+  margin-top: 0.5rem;
+}
+
+.register-button-wrap h6 a:hover {
+  text-decoration: underline;
+}
+
+.login-dsk .register-form {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.login-dsk .register-input-wrap {
+  gap: 1.5rem;
+}
+
+.login-dsk .register-button-wrap h6 {
+  font-size: 0.9rem;
+}
+
+.login-dsk .account-type-button {
+  font-size: 0.9rem;
+}

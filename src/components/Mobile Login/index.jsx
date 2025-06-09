@@ -5,7 +5,7 @@ import TRIANGLE_SVG from "../../assets/vectors/triangle";
 import HALF_MOON_SGV from "../../assets/vectors/half-moon";
 import PopUp from "../PopUp";
 
-function MobileLogin({ children }) {
+function MobileLogin({ children, height }) {
   return (
     <div className="flex-col login-mbl">
       <div className="sob-overflow login-vectors">
@@ -15,7 +15,7 @@ function MobileLogin({ children }) {
           <PLUS_SVG color="var(--l-yellow)" className="login-v03" />
         </div>
       </div>
-      <PopUp>{children}</PopUp>
+      <PopUp height={height}>{children}</PopUp>
     </div>
   );
 }

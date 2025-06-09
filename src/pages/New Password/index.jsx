@@ -12,7 +12,7 @@ function NewPassowrd() {
   return (
     <>
       {isMobile ? (
-        <MobileLogin>
+        <MobileLogin height="58%">
           <form className="flex-col password-form">
             <LoginHeader title="Resetar sua Senha" />
             <div className="login-input-wrap">

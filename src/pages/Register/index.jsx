@@ -94,7 +94,7 @@ function Register() {
   return (
     <>
       {isMobile ? (
-        <MobileLogin>{commonFormContent}</MobileLogin>
+        <MobileLogin height="80%">{commonFormContent}</MobileLogin>
       ) : (
         <DesktopLogin>{commonFormContent}</DesktopLogin>
       )}

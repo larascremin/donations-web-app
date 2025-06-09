@@ -12,7 +12,7 @@ function Reset() {
   return (
     <>
       {isMobile ? (
-        <MobileLogin>
+        <MobileLogin height="46%">
           <LoginHeader title="Resete sua senha" />
           <form className="flex-col reset-form">
             <StandardInput label="Insira seu e-mail" />

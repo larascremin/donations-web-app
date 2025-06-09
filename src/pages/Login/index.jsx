@@ -22,7 +22,7 @@ function Login() {
   return (
     <>
       {isMobile ? (
-        <MobileLogin>
+        <MobileLogin height="60%">
           <form className="flex-col login-form ">
             <LoginHeader title="Bem vindo(a) de volta!" />
             <div className="login-input-wrap">

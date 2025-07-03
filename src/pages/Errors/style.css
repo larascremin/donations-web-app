@@ -1,0 +1,47 @@
+.error-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.error-page h1 {
+  font-weight: 600;
+}
+
+.error-page button {
+  margin-top: 3rem;
+  padding: 0.75rem 2rem;
+}
+
+.error-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.error-v01 {
+  transform: rotate(110deg);
+  margin: 8% 0 0 8%;
+}
+
+.error-v02 {
+  transform: rotate(-50deg);
+  margin: 0 0 16% 20%;
+}
+
+.error-v03 {
+  transform: rotate(-40deg);
+  margin: 0 0 20% 0;
+}
+
+.error-v04 {
+  transform: scale(3) rotate(40deg);
+  margin: 0 0% 8% 0;
+}
+
+.error-v06 {
+  transform: rotate(40deg);
+  margin: 0 0% 8% 0;
+}

@@ -42,13 +42,23 @@ Um aplicativo web para facilitar o gerenciamento e recebimento de doações.
 ```
 donations-web-app/
 │
-├── public/             # Arquivos estáticos e HTML principal
-├── src/                # Código-fonte principal (componentes, utilitários, estilos)
-│   ├── components/
-│   ├── styles/
+├── public/                  # Arquivos estáticos públicos (index.html, favicon, imagens)
 │   └── ...
-├── package.json        # Dependências e scripts do projeto
-└── README.md           # Documentação do projeto
+│
+├── src/                     # Código-fonte principal da aplicação
+│   ├── assets/              # Imagens, fontes e outros recursos estáticos
+│   ├── components/          # Componentes reutilizáveis da interface (ex: Botões, Inputs)
+│   ├── pages/               # Páginas/views principais da aplicação (Dashboard, Cadastro, etc.)
+│   ├── services/            # Serviços de integração com APIs e lógica de negócio
+│   ├── styles/              # Estilos globais e temas CSS/SASS
+│   ├── utils/               # Funções utilitárias e helpers
+│   └── App.js               # Componente principal da aplicação
+│
+├── .env                     # Variáveis de ambiente (se necessário)
+├── .gitignore               # Arquivos/pastas ignorados pelo Git
+├── package.json             # Dependências, scripts e configurações do projeto
+├── README.md                # Documentação do projeto
+└── ...
 ```
 
 ## Contribuindo

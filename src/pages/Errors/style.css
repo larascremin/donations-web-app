@@ -27,23 +27,21 @@
 }
 
 .error-v02 {
-  transform: rotate(-50deg);
-  margin: 0 0 16% 14%;
+  visibility: hidden;
 }
 
 .error-v03 {
-  transform: scale(0.8) rotate(-40deg);
-  margin: 0 0 18% 1%;
+  visibility: hidden;
 }
 
 .error-v04 {
   transform: scale(3) rotate(40deg);
-  margin: 0 0 6% 14%;
+  margin: 0 0 6% 30%;
 }
 
 .error-v05 {
   transform: rotate(-20deg);
-  margin: 0 0 12% 12%;
+  margin: 1% 0 12% 12%;
 }
 
 .error-v06 {
@@ -64,11 +62,13 @@
   }
 
   .error-v02 {
+    visibility: visible;
     transform: scale(0.5) rotate(-50deg);
     margin: 0 0 55% 0%;
   }
 
   .error-v03 {
+    visibility: visible;
     transform: scale(0.6) rotate(-40deg);
     margin: 0 0 70% -16%;
   }

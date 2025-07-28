@@ -33,9 +33,9 @@ Um aplicativo web para facilitar o gerenciamento e recebimento de doações.
 
 1. Inicie o servidor de desenvolvimento:
    ```bash
-   npm start
+   npm run dev
    ```
-2. Acesse o aplicativo em [http://localhost:3000](http://localhost:3000) no seu navegador.
+2. Acesse o aplicativo em [http://localhost:5173](http://localhost:5173) no seu navegador.
 
 ## Estrutura do Projeto
 

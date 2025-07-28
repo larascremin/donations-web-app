@@ -1,5 +1,9 @@
+// Arquivo: Register.jsx (COMPLETO E CORRIGIDO)
+
 import React, { useState } from "react";
 import { useMediaQuery } from "react-responsive";
+import { useNavigate } from "react-router-dom";
+import api from "../../services/api";
 import "./style.css";
 import StandardInput from "../../components/Standard Input";
 import PasswordInput from "../../components/Password Input";
@@ -9,6 +13,7 @@ import MobileLogin from "../../components/Mobile Login";
 
 function Register() {
   const isMobile = useMediaQuery({ maxWidth: 768 });
+  const navigate = useNavigate();
 
   const [accountType, setAccountType] = useState("institution");
   const [email, setEmail] = useState("");
@@ -16,15 +21,45 @@ function Register() {
   const [name, setName] = useState("");
   const [orgName, setOrgName] = useState("");
 
-  const handleRegister = (e) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleRegister = async (e) => {
     e.preventDefault();
-    console.log("Attempting to register with details:", {
-      accountType,
-      name: accountType === "donor" ? name : undefined,
-      orgName: accountType === "institution" ? orgName : undefined,
-      email,
-      password,
-    });
+    setLoading(true);
+    setError(null);
+
+    const userTypeForApi = accountType === "donor" ? "DOADOR" : "INSTITUICAO";
+
+    const payload = {
+      nomeCompleto: accountType === "institution" ? orgName : name,
+      email: email,
+      senha: password,
+      tipo: userTypeForApi,
+      cidade: "",
+      bairro: "",
+      rua: "",
+      numero: "",
+      telefone: "",
+      cnpj: "",
+    };
+
+    try {
+      await api.post("/users", payload);
+      navigate("/auth", {
+        state: { message: "Cadastro realizado com sucesso! Faça seu login." },
+      });
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.errors?.[0] ||
+        err.response?.data?.message ||
+        "Ocorreu um erro ao fazer o cadastro. Verifique os dados e tente novamente.";
+        
+      setError(errorMessage);
+      console.error("Erro no cadastro:", err.response?.data || err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const commonFormContent = (
@@ -57,6 +92,7 @@ function Register() {
             value={orgName}
             onChange={(e) => setOrgName(e.target.value)}
             placeholder="Nome da Organização"
+            required
           />
         ) : (
           <StandardInput
@@ -64,6 +100,7 @@ function Register() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Nome Completo"
+            required
           />
         )}
         <StandardInput
@@ -72,20 +109,25 @@ function Register() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="E-mail"
+          required
         />
         <PasswordInput
           label="Insira sua senha"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Senha"
+          required
         />
       </div>
+
+      {error && <p className="error-message">{error}</p>}
+
       <div className="flex-col register-button-wrap">
-        <button type="submit" className="std-button">
-          CADASTRAR {}
+        <button type="submit" className="std-button" disabled={loading}>
+          {loading ? "CADASTRANDO..." : "CADASTRAR"}
         </button>
         <h6>
-          Já possui uma conta? <a href="/auth">Clique aqui</a> {}
+          Já possui uma conta? <a href="/auth">Clique aqui</a>
         </h6>
       </div>
     </form>

@@ -83,3 +83,14 @@
   margin-top: 0.5;
   text-align: left;
 }
+
+.error-message {
+  color: var(--l-red);
+  background-color: rgba(255, 0, 0, 0.1);
+  border: 1px solid var(--l-red);
+  padding: 0.75rem;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}

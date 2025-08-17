@@ -1,0 +1,83 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+@import "./colors.css";
+@import "tailwindcss";
+
+@layer base {
+  * {
+    overflow: hidden;
+  }
+
+  body {
+    background-color: var(--base-01);
+    font-family: "Poppins", sans-serif;
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+  }
+
+  hr {
+    border: none;
+    height: 1px;
+    background-color: var(--base-03);
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    letter-spacing: 4%;
+    font-weight: 600;
+  }
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  h3 {
+    font-size: 1.125rem;
+    font-weight: 500;
+  }
+  h5 {
+    font-size: 1rem;
+    font-weight: 300;
+  }
+  h6 {
+    font-size: 0.875rem;
+    font-weight: 200;
+    text-align: center;
+    color: var(--base-04);
+    letter-spacing: 4%;
+  }
+
+  a {
+    color: var(--pink);
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    text-decoration: underline;
+    display: block;
+  }
+
+  p {
+    font-size: 1rem;
+  }
+}
+
+@layer components {
+  .button-std {
+    @apply bg-[var(--base-05)] text-[var(--base-01)] rounded-lg px-6 py-3 font-medium tracking-[0.06rem] cursor-pointer;
+  }
+
+  .button-scd {
+    @apply bg-[var(--base-04)] text-[var(--base-01)] rounded-lg px-6 py-3 font-medium tracking-[0.06rem] cursor-pointer;
+  }
+
+  .comp-popup {
+    @apply bg-[var(--base-01)] fixed bottom-0 left-0 w-full rounded-t-2xl px-5 py-7 flex flex-col;
+  }
+
+  .comp-desktop {
+    @apply w-1/2 flex flex-col justify-center items-center;
+  }
+
+  .input-login {
+    @apply w-full border border-[var(--base-04)] rounded-lg py-3 px-3 mt-1;
+  }
+}

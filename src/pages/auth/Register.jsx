@@ -21,7 +21,7 @@ function Register() {
             type="button"
             className={`flex-1 py-3 px-4 text-sm font-semibold text-center cursor-pointer leading-tight transition-colors
       bg-[var(--base-01)] text-[var(--base-01)]
-      hover:bg-[var(--base-02)]
+      hover:bg-[var(--base-04)]
       ${
         accountType === "institution"
           ? "bg-[var(--base-05)] text-[var(--base-01)] border-[5px] border-[var(--base-01)] rounded-lg"
@@ -36,7 +36,7 @@ function Register() {
             type="button"
             className={`flex-1 py-3 px-4 text-sm font-semibold text-center cursor-pointer leading-tight transition-colors
       bg-[var(--base-01)] text-[var(--base-01)]
-      hover:bg-[var(--base-02)]
+      hover:bg-[var(--base-04)]
       ${
         accountType === "donor"
           ? "bg-[var(--base-05)] text-[var(--base-01)] border-[5px] border-[var(--base-01)] rounded-lg"

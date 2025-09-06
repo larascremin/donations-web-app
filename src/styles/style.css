@@ -70,7 +70,7 @@
   }
 
   .comp-popup {
-    @apply bg-[var(--base-01)] fixed bottom-0 left-0 w-full rounded-t-2xl px-5 py-7 flex flex-col;
+    @apply bg-[var(--base-01)] w-full rounded-t-2xl px-5 py-7 flex flex-col;
   }
 
   .comp-desktop {

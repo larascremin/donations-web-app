@@ -1,7 +1,11 @@
-import React from "react";
+import NavigationBar from "../../components/NavigationBar";
 
 function Profile() {
-  return <div></div>;
+  return (
+    <div className="">
+      <NavigationBar />
+    </div>
+  );
 }
 
 export default Profile;

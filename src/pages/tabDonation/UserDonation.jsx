@@ -1,7 +1,11 @@
-import React from "react";
+import NavigationBar from "../../components/NavigationBar";
 
 function UserDonation() {
-  return <div></div>;
+  return (
+    <div className="">
+      <NavigationBar />
+    </div>
+  );
 }
 
 export default UserDonation;

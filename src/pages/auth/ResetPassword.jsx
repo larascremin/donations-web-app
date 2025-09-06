@@ -1,10 +1,25 @@
-import React, { useState } from "react";
-import DynamicLogin from "../../components/DynamicLogin";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
+import DynamicLogin from "../../components/DynamicLogin";
+// import { postData } from "../../services/Methods";
 
 function Reset() {
-  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+
+    try {
+      // const data = await postData("/api/auth/forgot-password", { email });
+      console.log("enviou email para resetar senha");
+      navigate("/home");
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
 
   return (
     <DynamicLogin>
@@ -22,7 +37,9 @@ function Reset() {
           className="input-login mb-6"
         />
       </form>
-      <button className="button-std w-full">ENVIAR</button>
+      <button className="button-std w-full" onClick={handleResetPassword}>
+        ENVIAR
+      </button>
       <div className="flex mt-2 gap-1 justify-center">
         <h6>Deseja voltar ao Login? </h6>
         <a href="/auth">Clique Aqui</a>

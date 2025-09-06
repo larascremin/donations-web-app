@@ -18,12 +18,12 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/auth" element={<Login />} />
         <Route path="/auth/reset-password" element={<Reset />} />
         <Route path="/auth/register" element={<Register />} />
         <Route path="/auth/new-password" element={<NewPassword />} />
-        <Route path="/list" element={<Finder />} />
+        <Route path="/finder" element={<Finder />} />
         <Route path="/donation/org" element={<OrgDonation />} />
         <Route path="/donation/user" element={<UserDonation />} />
         <Route path="/donation/form" element={<CreateDonation />} />

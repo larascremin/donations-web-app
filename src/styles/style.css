@@ -3,10 +3,6 @@
 @import "tailwindcss";
 
 @layer base {
-  * {
-    overflow: hidden;
-  }
-
   body {
     background-color: var(--base-01);
     font-family: "Poppins", sans-serif;
@@ -57,6 +53,10 @@
 
   p {
     font-size: 1rem;
+  }
+
+  button {
+    cursor: pointer;
   }
 }
 

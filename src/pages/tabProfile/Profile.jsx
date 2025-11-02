@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
-import { PencilSimple } from "@phosphor-icons/react";
 import NavigationBar from "../../components/NavigationBar";
 import PasswordInput from "../../components/PasswordInput";
 import profile01 from "../../assets/images/cj-profile-01.svg";
+import { UserContext } from "../../hooks/UserContext";
 
 function Profile() {
   const isMobile = useMediaQuery({ maxWidth: 768 });
-
+  const { user, setUser } = useContext(UserContext);
   const [name, setName] = useState("");
   const [city, setCity] = useState("");
   const [email, setEmail] = useState("");
@@ -16,10 +16,45 @@ function Profile() {
   const [number, setNumber] = useState("");
   const [password, setPassword] = useState("");
   const [neighborhood, setNeighborhood] = useState("");
-  const [accountType, setAccountType] = useState("INSTITUICAO");
 
-  const hardCodedAccountType = "DOADOR"; //mudar
-  const isDoador = hardCodedAccountType === "DOADOR";
+  const isDoador = user?.role === "DOADOR";
+
+  useEffect(() => {
+    if (user) {
+      setName(user.nome || "");
+      setEmail(user.email || "");
+      setPassword(user.senha || "");
+      if (!isDoador) {
+        setPhone(user.telefone || "");
+        setCity(user.cidade || "");
+        setStreet(user.rua || "");
+        setNeighborhood(user.bairro || "");
+        setNumber(user.numero || "");
+      }
+    }
+  }, [user, isDoador]);
+
+  const handleUpdate = (e) => {
+    e.preventDefault();
+
+    const updatedUser = {
+      ...user,
+      nome: name,
+      email,
+      senha: password,
+      ...(isDoador
+        ? {}
+        : {
+            telefone: phone,
+            cidade: city,
+            rua: street,
+            bairro: neighborhood,
+            numero: number,
+          }),
+    };
+
+    setUser(updatedUser);
+  };
 
   return (
     <div className="flex">
@@ -36,15 +71,29 @@ function Profile() {
           {isMobile ? (
             <></>
           ) : (
-            <img src={profile01} className="h-40 -mt-20 ml-20" />
+            <img
+              src={!isDoador && user?.imagem ? user.imagem : profile01}
+              className={`h-40 -mt-20 ml-20 ${
+                !isDoador
+                  ? "rounded-full border border-2 border-[var(--base-04)]"
+                  : ""
+              }`}
+            />
           )}
         </div>
         {isMobile ? (
-          <img src={profile01} className="h-30 -mt-16 mb-10" />
+          <img
+            src={!isDoador && user?.imagem ? user.imagem : profile01}
+            className={`h-30 -mt-16 mb-10 ${
+              !isDoador
+                ? "rounded-full border border-2 border-[var(--base-04)]"
+                : ""
+            }`}
+          />
         ) : (
           <></>
         )}
-        <form className="w-full max-w-200 px-4 mb-30">
+        <form className="w-full max-w-200 px-4 mb-30" onSubmit={handleUpdate}>
           {isMobile ? <></> : <h2 className="mb-10">Seus Dados</h2>}
           <label htmlFor="name">
             {isDoador ? "Nome completo" : "Nome da Org/Instituição"}
@@ -133,7 +182,7 @@ function Profile() {
           <div className="flex justify-end mt-10">
             <button
               type="submit"
-              className={`button-scd ${isMobile ? "w-full" : "w-60"}`}
+              className={`button-std ${isMobile ? "w-full" : "w-60"}`}
             >
               ATUALIZAR
             </button>

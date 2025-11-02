@@ -45,7 +45,7 @@ function NavigationBar() {
           </button>
           <button
             className="w-1/4 flex items-center justify-center"
-            onClick={() => navigate("/donation/user")}
+            onClick={() => navigate("/donation")}
           >
             <PlusCircle
               size={36}
@@ -123,7 +123,7 @@ function NavigationBar() {
             className={`flex items-center rounded-lg px-4 py-2 gap-4 ${
               path.startsWith("/donation") ? "bg-[var(--bg-green)]" : ""
             } `}
-            onClick={() => navigate("/donation/user")}
+            onClick={() => navigate("/donation")}
           >
             <PlusCircle
               size={32}

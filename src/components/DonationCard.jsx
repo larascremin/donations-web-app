@@ -1,8 +1,10 @@
 import React from "react";
 import { MapPinLine } from "@phosphor-icons/react";
 import { categoryColors, categoryIcons } from "../services/Variables";
+import { useMediaQuery } from "react-responsive";
 
 const DonationCard = ({ title, date, requester, category, location }) => {
+  const isMobile = useMediaQuery({ maxWidth: 768 });
   const key = category?.toLowerCase();
   const bgColor = categoryColors[key] || "bg-gray-300";
   const IconComponent = categoryIcons[key] || "";
@@ -22,8 +24,15 @@ const DonationCard = ({ title, date, requester, category, location }) => {
           <h5 className="uppercase text-sm">{category}</h5>
         </div>
         <div className="flex items-center gap-1 text-[var(--base-05)]">
-          <MapPinLine size={16} />
-          <p>{location}</p>
+          {isMobile ? (
+            ""
+          ) : (
+            <>
+              {" "}
+              <MapPinLine size={16} />
+              <p>{location}</p>
+            </>
+          )}
         </div>
       </div>
     </div>

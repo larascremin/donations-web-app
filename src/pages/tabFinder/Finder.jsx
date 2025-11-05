@@ -6,46 +6,67 @@ import DonationCard from "../../components/DonationCard";
 import { categoryColors, categoryIcons } from "../../services/Variables";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../hooks/UserContext";
+import api from "../../services/api";
 
 function Finder() {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDonation, setSelectedDonation] = useState(null);
-  const { user, setUser, mockUsers, setMockUsers } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const navigate = useNavigate();
+
+  const [donations, setDonations] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     document.body.style.overflow = selectedDonation ? "hidden" : "auto";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
   }, [selectedDonation]);
 
-  const donations = mockUsers.organizacoes
-    .flatMap((org) =>
-      org.doacoesSolicitadas.map((d) => {
-        const [dia, mes] = d.dataCriacao.split("-");
-        const formattedDate = `${dia}/${mes}`;
+  useEffect(() => {
+    fetchDonations();
+  }, []);
+
+  const fetchDonations = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get("/itens");
+
+      const listaDoBackend = response.data.content || [];
+
+      const formattedData = listaDoBackend.map((item) => {
+        const dateObj = new Date(item.dataCriacao);
+        const formattedDate = dateObj.toLocaleDateString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+        });
 
         return {
-          title: d.titulo,
-          description: d.descricao,
-          category: d.categoria.toLowerCase(),
-          requester: org.nome,
-          location: d.pontoDeArrecadamento,
-          city: org.cidade,
-          id: d.id,
+          id: item.id,
+          title: item.titulo,
+          description: item.descricao,
+          category: item.categoria?.toLowerCase() || "outros",
+          requester: item.solicitanteNome || "Instituição",
+          location: item.pontosArrecadacao?.[0] || "Local não informado",
           date: formattedDate,
-          image: org.imagem,
-          rawDate: new Date(2025, parseInt(mes) - 1, parseInt(dia)),
+          image: null,
+          rawDate: dateObj,
           organization: {
-            nome: org.nome,
-            doacoesSolicitadas: org.doacoesSolicitadas,
-            pontosDeArrecadamento: Array.isArray(d.pontoDeArrecadamento)
-              ? d.pontoDeArrecadamento
-              : [d.pontoDeArrecadamento],
+            nome: item.solicitanteNome,
+            pontosDeArrecadamento: item.pontosArrecadacao || [],
           },
         };
-      })
-    )
-    .sort((a, b) => b.rawDate - a.rawDate);
+      });
+      formattedData.sort((a, b) => b.rawDate - a.rawDate);
+      setDonations(formattedData);
+    } catch (error) {
+      console.error("Erro ao buscar doações:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredDonations = donations.filter((donation) => {
     const search = searchTerm.toLowerCase();
@@ -55,6 +76,34 @@ function Finder() {
       donation.requester.toLowerCase().includes(search)
     );
   });
+
+  const handleDonate = async () => {
+    if (!user) {
+      alert("Você precisa fazer login para realizar uma doação.");
+      navigate("/auth");
+      return;
+    }
+    if (!selectedDonation) return;
+
+    try {
+      await api.post("/doacoes", {
+        titulo: selectedDonation.title,
+        descricao: selectedDonation.description,
+        categoria: selectedDonation.category.toUpperCase(),
+        itemSolicitadoId: selectedDonation.id,
+      });
+
+      alert("Intenção de doação registrada com sucesso! Veja em 'Minhas Doações'.");
+      setSelectedDonation(null);
+      navigate("/donation");
+    } catch (error) {
+      console.error("Erro ao doar:", error);
+      alert(
+        error.response?.data?.message ||
+          "Erro ao registrar doação. Tente novamente."
+      );
+    }
+  };
 
   return (
     <div className="flex">
@@ -82,10 +131,13 @@ function Finder() {
             className="ml-3 w-full bg-transparent outline-none text-[var(--base-06)] placeholder-[var(--base-04)]"
           />
         </div>
-        {filteredDonations.length > 0 ? (
-          filteredDonations.map((d, i) => (
+
+        {loading ? (
+          <p className="mt-10 text-[var(--base-05)]">Carregando doações...</p>
+        ) : filteredDonations.length > 0 ? (
+          filteredDonations.map((d) => (
             <div
-              key={i}
+              key={d.id}
               onClick={() => setSelectedDonation(d)}
               className="cursor-pointer w-full max-w-200"
             >
@@ -103,16 +155,18 @@ function Finder() {
             Nenhum resultado encontrado.
           </p>
         )}
+
+        {/* --- MODAL DE DETALHES --- */}
         {selectedDonation && (
           <div className="fixed inset-0 bg-black/10 backdrop-blur-sm flex justify-center items-center z-50">
             <div
-              className={`bg-[var(--base-01)] text-[var(--base-05)]  shadow-lg p-6 relative animate-fadeIn
-    ${
-      isMobile
-        ? "max-h-screen py-6 overflow-y-auto w-full "
-        : "rounded-2xl w-[90%] max-w-200"
-    }
-  `}
+              className={`bg-[var(--base-01)] text-[var(--base-05)] shadow-lg p-6 relative animate-fadeIn
+                ${
+                  isMobile
+                    ? "max-h-screen py-6 overflow-y-auto w-full "
+                    : "rounded-2xl w-[90%] max-w-200"
+                }
+              `}
             >
               <button
                 onClick={() => setSelectedDonation(null)}
@@ -121,30 +175,26 @@ function Finder() {
                 <X size={30} color="var(--base-03)" />
               </button>
               <div className="flex items-center gap-4 mb-6">
-                <img
-                  src={selectedDonation.image}
-                  className={`border border-[var(--base-03)] rounded-full ${
-                    isMobile ? "h-16" : "h-20"
-                  }`}
-                />
+                {/* */}
+                {selectedDonation.image && (
+                  <img
+                    src={selectedDonation.image}
+                    alt={selectedDonation.organization.nome}
+                    className={`border border-[var(--base-03)] rounded-full ${
+                      isMobile ? "h-16" : "h-20"
+                    }`}
+                  />
+                )}
                 <div>
                   <h3>{selectedDonation.organization.nome}</h3>
-                  <p>
-                    {selectedDonation.organization.doacoesSolicitadas?.length ||
-                      0}{" "}
-                    solicitações abertas
-                  </p>
                 </div>
               </div>
               <hr />
               <div className="flex items-center gap-4 mt-6 mb-4">
                 {(() => {
                   const color =
-                    categoryColors[selectedDonation.category.toLowerCase()] ||
-                    "bg-gray-300";
-                  const Icon =
-                    categoryIcons[selectedDonation.category.toLowerCase()] ||
-                    null;
+                    categoryColors[selectedDonation.category] || "bg-gray-300";
+                  const Icon = categoryIcons[selectedDonation.category] || null;
                   return (
                     <div
                       className={`flex items-center gap-1 ${color} p-2 rounded-4xl`}
@@ -158,71 +208,35 @@ function Finder() {
                 </h2>
               </div>
               <p className="mb-6">
-                {selectedDonation.description ||
-                  "Descrição não informada para esta doação."}
+                {selectedDonation.description || "Sem descrição."}
               </p>
               <hr />
               <div className="mt-6">
-                <p>Pontos de arrecadamento:</p>
-                <div className="flex flex-col gap-2 mt-2">
+                <p className="font-semibold mb-2">Pontos de arrecadação:</p>
+                <div className="flex flex-col gap-2">
                   {selectedDonation.organization.pontosDeArrecadamento
-                    ?.length ? (
+                    ?.length > 0 ? (
                     selectedDonation.organization.pontosDeArrecadamento.map(
                       (ponto, index) => (
                         <div
                           key={index}
                           className="flex gap-2 bg-[var(--base-02)] rounded-md px-4 py-2 items-center"
                         >
-                          <MapPinLine size={20} />
-                          <h5>{ponto}</h5>
+                          <MapPinLine size={20} className="flex-shrink-0" />
+                          <h5 className="break-words">{ponto}</h5>
                         </div>
                       )
                     )
                   ) : (
-                    <p>Nenhum ponto de arrecadação informado.</p>
+                    <p className="text-sm text-[var(--base-04)]">
+                      Nenhum ponto informado.
+                    </p>
                   )}
                 </div>
               </div>
               <hr className="my-8" />
               <div className="flex justify-center">
-                <button
-                  className="button-std px-10"
-                  onClick={() => {
-                    if (!user || !selectedDonation) return;
-
-                    const donationId = selectedDonation.id;
-
-                    const newDonation = {
-                      id: donationId,
-                      confirmado: false,
-                    };
-
-                    const updatedUser = {
-                      ...user,
-                      doacoesRealizadas: [
-                        ...(user.doacoesRealizadas || []),
-                        newDonation,
-                      ],
-                    };
-
-                    setUser(updatedUser);
-                    localStorage.setItem("user", JSON.stringify(updatedUser));
-
-                    const stored = JSON.parse(
-                      localStorage.getItem("mockUsers")
-                    );
-                    if (stored) {
-                      const updatedDoadores = stored.doadores.map((d) =>
-                        d.id === user.id ? updatedUser : d
-                      );
-                      stored.doadores = updatedDoadores;
-                      localStorage.setItem("mockUsers", JSON.stringify(stored));
-                    }
-
-                    setSelectedDonation(null);
-                    navigate("/donation");
-                  }}
-                >
+                <button className="button-std px-10" onClick={handleDonate}>
                   QUERO DOAR
                 </button>
               </div>

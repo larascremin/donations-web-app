@@ -1,38 +1,58 @@
 import React, { createContext, useState, useEffect } from "react";
-import { mockUsers as initialMockUsers, mockUsers } from "../services/Mock";
+import api from "../services/api";
 
-export const UserContext = createContext(null);
+export const UserContext = createContext({});
 
 export function UserProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem("user");
-    return savedUser ? JSON.parse(savedUser) : null;
-  });
-
-  const [mockUsers, setMockUsers] = useState(() => {
-    const savedMock = localStorage.getItem("mockUsers");
-    return savedMock ? JSON.parse(savedMock) : initialMockUsers;
-  });
+  const [user, setUser] = useState(null);
+  const [loadingUser, setLoadingUser] = useState(true);
 
   useEffect(() => {
-    if (user) {
-      localStorage.setItem("user", JSON.stringify(user));
-    } else {
-      localStorage.removeItem("user");
+    const storedUser = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("token");
+
+    if (storedToken && storedUser && storedUser !== "undefined") {
+      try {
+        setUser(JSON.parse(storedUser));
+        api.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
+      } catch (e) {
+        console.warn("Dados de usuário corrompidos no localStorage. Limpando...");
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+      }
     }
-  }, [user]);
+    setLoadingUser(false);
+  }, []);
 
-  useEffect(() => {
-    localStorage.setItem("mockUsers", JSON.stringify(mockUsers));
-  }, [mockUsers]);
+  const login = async (email, senha) => {
+    try {
+      const responseAuth = await api.post("/auth/login", { email, senha });
+      const { token } = responseAuth.data;
+      localStorage.setItem("token", token);
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+      const responseUser = await api.get("/users/me");
+      const userData = responseUser.data;
+
+      localStorage.setItem("user", JSON.stringify(userData));
+      setUser(userData);
+
+    } catch (error) {
+      logout();
+      throw error;
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    api.defaults.headers.common["Authorization"] = null;
+    setUser(null);
+  };
 
   return (
-    <UserContext.Provider value={{ user, setUser, mockUsers, setMockUsers }}>
+    <UserContext.Provider value={{ user, setUser, login, logout, loadingUser }}>
       {children}
     </UserContext.Provider>
   );
-}
-
-export function saveMockData() {
-  localStorage.setItem("mockUsers", JSON.stringify(mockUsers));
 }

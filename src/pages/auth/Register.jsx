@@ -1,34 +1,53 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
 import DynamicLogin from "../../components/DynamicLogin";
 import PasswordInput from "../../components/PasswordInput";
-// import { postData } from "../../services/Methods";
+import { saveMockData, UserContext } from "../../hooks/UserContext";
+import { mockUsers } from "../../services/Mock";
 
 function Register() {
   const navigate = useNavigate();
   const isMobile = useMediaQuery({ maxWidth: 768 });
+  const { setUser } = useContext(UserContext);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [accountType, setAccountType] = useState("INSTITUICAO");
 
-  const handleRegister = async (e) => {
+  const handleRegister = (e) => {
     e.preventDefault();
 
-    try {
-      // const data = await postData("/api/users", {
-      //   name,
-      //   email,
-      //   senha: password, //precisa confirmar nome parametros
-      //   tipo: accountType,
-      // });
-      console.log("registrou");
-      navigate("/home");
-    } catch (e) {
-      console.log(e.message);
+    const newUser = {
+      id: Date.now(),
+      nome: name,
+      email,
+      senha: password,
+      role: accountType,
+    };
+
+    if (accountType === "INSTITUICAO") {
+      mockUsers.organizacoes.push({
+        ...newUser,
+        telefone: "",
+        cidade: "",
+        rua: "",
+        bairro: "",
+        numero: "",
+        imagem: null,
+        doacoesSolicitadas: [],
+      });
+    } else {
+      mockUsers.doadores.push({
+        ...newUser,
+        doacoesRealizadas: [],
+      });
     }
+
+    saveMockData();
+    setUser(newUser);
+    navigate("/home");
   };
 
   return (

@@ -16,43 +16,52 @@ function CreateDonation() {
   const [collectionPoint, setCollectionPoint] = useState(
     doacao.pontoDeArrecadamento || ""
   );
+  const [error, setError] = useState("");
 
   const handleSave = () => {
     if (!title || !category || !description || !collectionPoint) {
-      alert("Preencha todos os campos");
+      setError("Todos os campos precisam ser preenchidos");
       return;
     }
-    if (doacao.id) {
-      const updatedDoacoes = user.doacoesSolicitadas.map((d) =>
-        d.id === doacao.id
-          ? {
-              ...d,
-              titulo: title,
-              categoria: category,
-              descricao: description,
-              pontoDeArrecadamento: collectionPoint,
-            }
-          : d
-      );
-      setUser({ ...user, doacoesSolicitadas: updatedDoacoes });
-    } else {
-      const newDoacao = {
-        id: Date.now(),
-        titulo: title,
-        categoria: category,
-        descricao: description,
-        pontoDeArrecadamento: collectionPoint,
-        dataCriacao: new Date().toLocaleDateString("pt-BR", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        }),
-      };
 
-      setUser({
+    const newDoacao = {
+      id: doacao.id || Date.now(),
+      titulo: title,
+      categoria: category,
+      descricao: description,
+      pontoDeArrecadamento: collectionPoint,
+      dataCriacao: new Date().toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      }),
+    };
+
+    let updatedUser;
+    if (doacao.id) {
+      updatedUser = {
         ...user,
-        doacoesSolicitadas: [...user.doacoesSolicitadas, newDoacao],
-      });
+        doacoesSolicitadas: user.doacoesSolicitadas.map((d) =>
+          d.id === doacao.id ? newDoacao : d
+        ),
+      };
+    } else {
+      updatedUser = {
+        ...user,
+        doacoesSolicitadas: [...(user.doacoesSolicitadas || []), newDoacao],
+      };
+    }
+    setUser(updatedUser);
+
+    const savedMockUsers = JSON.parse(localStorage.getItem("mockUsers"));
+    if (savedMockUsers && Array.isArray(savedMockUsers.organizacoes)) {
+      const orgIndex = savedMockUsers.organizacoes.findIndex(
+        (org) => org.id === user.id
+      );
+      if (orgIndex !== -1) {
+        savedMockUsers.organizacoes[orgIndex] = updatedUser;
+        localStorage.setItem("mockUsers", JSON.stringify(savedMockUsers));
+      }
     }
 
     navigate("/donation");
@@ -122,6 +131,7 @@ function CreateDonation() {
             className="input-login"
           />
         </form>
+        {error && <h3 className="text-red-700 font-semibold mt-6">{error}</h3>}
         <button
           className="button-std w-full max-w-60 mt-10 mb-20"
           onClick={handleSave}

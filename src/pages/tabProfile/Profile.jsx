@@ -16,6 +16,8 @@ function Profile() {
   const [number, setNumber] = useState("");
   const [password, setPassword] = useState("");
   const [neighborhood, setNeighborhood] = useState("");
+  const [isUpdated, setIsUpdated] = useState(false);
+  const [error, setError] = useState("");
 
   const isDoador = user?.role === "DOADOR";
 
@@ -36,6 +38,23 @@ function Profile() {
 
   const handleUpdate = (e) => {
     e.preventDefault();
+    setError("");
+
+    const hasChanges =
+      name !== (user.nome || "") ||
+      email !== (user.email || "") ||
+      password !== (user.senha || "") ||
+      (!isDoador &&
+        (phone !== (user.telefone || "") ||
+          city !== (user.cidade || "") ||
+          street !== (user.rua || "") ||
+          neighborhood !== (user.bairro || "") ||
+          number !== (user.numero || "")));
+
+    if (!hasChanges) {
+      setError("Nenhuma alteração foi feita para atualizar");
+      return;
+    }
 
     const updatedUser = {
       ...user,
@@ -54,6 +73,7 @@ function Profile() {
     };
 
     setUser(updatedUser);
+    setIsUpdated(true);
   };
 
   return (
@@ -178,13 +198,19 @@ function Profile() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-
+          {error && (
+            <h3 className="text-red-700 font-semibold mt-6 text-center">
+              {error}
+            </h3>
+          )}
           <div className="flex justify-end mt-10">
             <button
               type="submit"
-              className={`button-std ${isMobile ? "w-full" : "w-60"}`}
+              className={`button-std ${isMobile ? "w-full" : "w-60"} ${
+                isUpdated ? "bg-[var(--green)]" : ""
+              }`}
             >
-              ATUALIZAR
+              {isUpdated ? "ATUALIZADO" : "ATUALIZAR"}
             </button>
           </div>
         </form>

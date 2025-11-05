@@ -1,15 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useMediaQuery } from "react-responsive";
 import { MagnifyingGlass, X, MapPinLine } from "@phosphor-icons/react";
 import NavigationBar from "../../components/NavigationBar";
 import DonationCard from "../../components/DonationCard";
 import { categoryColors, categoryIcons } from "../../services/Variables";
-import { mockUsers } from "../../services/Mock";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../hooks/UserContext";
 
 function Finder() {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDonation, setSelectedDonation] = useState(null);
+  const { user, setUser, mockUsers, setMockUsers } = useContext(UserContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.body.style.overflow = selectedDonation ? "hidden" : "auto";
@@ -28,7 +31,7 @@ function Finder() {
           requester: org.nome,
           location: d.pontoDeArrecadamento,
           city: org.cidade,
-          id: `${org.id}-${d.titulo}`,
+          id: d.id,
           date: formattedDate,
           image: org.imagem,
           rawDate: new Date(2025, parseInt(mes) - 1, parseInt(dia)),
@@ -182,7 +185,46 @@ function Finder() {
               </div>
               <hr className="my-8" />
               <div className="flex justify-center">
-                <button className="button-std px-10">QUERO DOAR</button>
+                <button
+                  className="button-std px-10"
+                  onClick={() => {
+                    if (!user || !selectedDonation) return;
+
+                    const donationId = selectedDonation.id;
+
+                    const newDonation = {
+                      id: donationId,
+                      confirmado: false,
+                    };
+
+                    const updatedUser = {
+                      ...user,
+                      doacoesRealizadas: [
+                        ...(user.doacoesRealizadas || []),
+                        newDonation,
+                      ],
+                    };
+
+                    setUser(updatedUser);
+                    localStorage.setItem("user", JSON.stringify(updatedUser));
+
+                    const stored = JSON.parse(
+                      localStorage.getItem("mockUsers")
+                    );
+                    if (stored) {
+                      const updatedDoadores = stored.doadores.map((d) =>
+                        d.id === user.id ? updatedUser : d
+                      );
+                      stored.doadores = updatedDoadores;
+                      localStorage.setItem("mockUsers", JSON.stringify(stored));
+                    }
+
+                    setSelectedDonation(null);
+                    navigate("/donation");
+                  }}
+                >
+                  QUERO DOAR
+                </button>
               </div>
             </div>
           </div>

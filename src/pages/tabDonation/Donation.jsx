@@ -6,15 +6,16 @@ import donation02 from "../../assets/images/cj-donation-02.svg";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { UserContext } from "../../hooks/UserContext";
-import { mockUsers } from "../../services/Mock";
 
 function Donation() {
   const navigate = useNavigate();
   const isMobile = useMediaQuery({ maxWidth: 768 });
-  const { user, setUser } = useContext(UserContext);
+  const { user, setUser, mockUsers, setMockUsers } = useContext(UserContext);
   const isDonator = user?.role === "DOADOR";
 
   const formatDate = (dateString) => {
+    if (dateString === "HOJE") return "HOJE";
+
     const date = new Date(dateString.split("-").reverse().join("-"));
     return new Intl.DateTimeFormat("pt-BR", {
       day: "2-digit",
@@ -87,7 +88,7 @@ function Donation() {
         )}
 
         <div className="w-full max-w-200">
-          {isDonator && (
+          {isDonator && user?.doacoesRealizadas?.length > 0 && (
             <>
               {user.doacoesRealizadas.map((doacao) => {
                 const details = mockUsers.organizacoes
@@ -95,13 +96,31 @@ function Donation() {
                   .find((d) => d.id === doacao.id);
                 if (!details) return null;
                 const handleConfirm = () => {
+                  const formattedDate = "HOJE";
+
                   const updatedUser = {
                     ...user,
                     doacoesRealizadas: user.doacoesRealizadas.map((d) =>
-                      d.id === doacao.id ? { ...d, confirmado: true } : d
+                      d.id === doacao.id
+                        ? {
+                            ...d,
+                            confirmado: true,
+                            dataConfirmacao: formattedDate,
+                          }
+                        : d
                     ),
                   };
+
                   setUser(updatedUser);
+
+                  const updatedMockUsers = { ...mockUsers };
+                  const userIndex = updatedMockUsers.doadores.findIndex(
+                    (d) => d.id === user.id
+                  );
+                  if (userIndex !== -1) {
+                    updatedMockUsers.doadores[userIndex] = updatedUser;
+                    setMockUsers(updatedMockUsers);
+                  }
                 };
 
                 return doacao.confirmado ? (
@@ -112,7 +131,12 @@ function Donation() {
                     <div>
                       <h3 className="mb-1">{details.titulo}</h3>
                       {!isMobile && <p>Para: {details.pontoDeArrecadamento}</p>}
-                      <p>Doado em: {formatDate(details.dataCriacao)}</p>
+                      <p>
+                        Doado em:{" "}
+                        {doacao.dataConfirmacao
+                          ? formatDate(doacao.dataConfirmacao)
+                          : "PENDENTE"}
+                      </p>
                     </div>
                     {!isMobile && (
                       <Check size={40} color="var(--pink)" className="mr-4" />
@@ -140,6 +164,8 @@ function Donation() {
             </>
           )}
           {!isDonator &&
+            Array.isArray(user?.doacoesSolicitadas) &&
+            user.doacoesSolicitadas.length > 0 &&
             user.doacoesSolicitadas.map((doacao) => {
               const dataFormatada = formatDate(doacao.dataCriacao);
               const handleDelete = () => {
@@ -150,6 +176,19 @@ function Donation() {
                   ),
                 };
                 setUser(updatedUser);
+
+                const updatedMockUsers = { ...mockUsers };
+                const orgIndex = updatedMockUsers.organizacoes.findIndex(
+                  (org) => org.id === user.id
+                );
+                if (orgIndex !== -1) {
+                  updatedMockUsers.organizacoes[orgIndex] = updatedUser;
+                  setMockUsers(updatedMockUsers);
+                  localStorage.setItem(
+                    "mockUsers",
+                    JSON.stringify(updatedMockUsers)
+                  ); // ✅ garante persistência
+                }
               };
 
               return (

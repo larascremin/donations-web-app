@@ -1,71 +1,51 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import NavigationBar from "../../components/NavigationBar";
 import FeedbackBanner from "../../components/FeedbackBanner";
-import { useLocation, useNavigate } from "react-router-dom";
-import { UserContext } from "../../hooks/UserContext";
+import { useNavigate } from "react-router-dom";
+import api from "../../services/api";
 
 function CreateDonation() {
   const navigate = useNavigate();
-  const location = useLocation();
   const isMobile = useMediaQuery({ maxWidth: 768 });
-  const { user, setUser } = useContext(UserContext);
-  const doacao = location.state?.doacao || {};
-  const [title, setTitle] = useState(doacao.titulo || "");
-  const [category, setCategory] = useState(doacao.categoria || "");
-  const [description, setDescription] = useState(doacao.descricao || "");
-  const [collectionPoint, setCollectionPoint] = useState(
-    doacao.pontoDeArrecadamento || ""
-  );
-  const [error, setError] = useState("");
 
-  const handleSave = () => {
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
+  const [collectionPoint, setCollectionPoint] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState({ text: "", type: "" });
+
+  const handleSave = async () => {
     if (!title || !category || !description || !collectionPoint) {
-      setError("Todos os campos precisam ser preenchidos");
+      setMessage({ text: "Todos os campos precisam ser preenchidos", type: "error" });
       return;
     }
 
-    const newDoacao = {
-      id: doacao.id || Date.now(),
-      titulo: title,
-      categoria: category,
-      descricao: description,
-      pontoDeArrecadamento: collectionPoint,
-      dataCriacao: new Date().toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      }),
-    };
+    setMessage({ text: "", type: "" });
+    setLoading(true);
 
-    let updatedUser;
-    if (doacao.id) {
-      updatedUser = {
-        ...user,
-        doacoesSolicitadas: user.doacoesSolicitadas.map((d) =>
-          d.id === doacao.id ? newDoacao : d
-        ),
+    try {
+      const payload = {
+        titulo: title,
+        descricao: description,
+        categoria: category,
+        pontosArrecadacao: [collectionPoint],
       };
-    } else {
-      updatedUser = {
-        ...user,
-        doacoesSolicitadas: [...(user.doacoesSolicitadas || []), newDoacao],
-      };
-    }
-    setUser(updatedUser);
 
-    const savedMockUsers = JSON.parse(localStorage.getItem("mockUsers"));
-    if (savedMockUsers && Array.isArray(savedMockUsers.organizacoes)) {
-      const orgIndex = savedMockUsers.organizacoes.findIndex(
-        (org) => org.id === user.id
-      );
-      if (orgIndex !== -1) {
-        savedMockUsers.organizacoes[orgIndex] = updatedUser;
-        localStorage.setItem("mockUsers", JSON.stringify(savedMockUsers));
-      }
+      await api.post("/itens", payload);
+      setMessage({ text: "Solicitação criada com sucesso!", type: "success" });
+      setTimeout(() => navigate("/donation"), 1500);
+    } catch (err) {
+      console.error("Erro ao criar solicitação:", err);
+      setMessage({
+        text: err.response?.data?.message || "Erro ao salvar solicitação. Tente novamente.",
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
     }
-
-    navigate("/donation");
   };
 
   return (
@@ -86,16 +66,18 @@ function CreateDonation() {
         ) : (
           <h1 className="p-10">CRIAR SOLICITAÇÃO</h1>
         )}
-        <form className="max-w-200">
+
+        <form className="max-w-200 w-full" onSubmit={(e) => e.preventDefault()}>
           <label htmlFor="title">Item a ser solicitado</label>
           <input
             id="title"
             type="text"
-            placeholder="Ex: Lenço umidecido..."
+            placeholder="Ex: Lenço umedecido..."
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="input-login mb-6"
           />
+
           <label htmlFor="category">Categoria do Item</label>
           <select
             id="category"
@@ -105,39 +87,38 @@ function CreateDonation() {
           >
             <option value="">Selecione uma categoria</option>
             <option value="ALIMENTO">ALIMENTO</option>
-            <option value="MOBILIA">MOBILIA</option>
-            <option value="VESTUARIO">VESTUARIO</option>
+            <option value="MOBILIA">MOBÍLIA</option>
+            <option value="VESTUARIO">VESTUÁRIO</option>
             <option value="HIGIENE">HIGIENE</option>
           </select>
+
           <label htmlFor="description">Breve Descrição</label>
           <textarea
             id="description"
-            name="description"
             rows="5"
-            cols="40"
-            placeholder="Ex: quantidade necessária, marca..."
+            placeholder="Ex: quantidade necessária, marca, detalhes..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="input-login mb-6"
+            className="input-login mb-6 resize-none"
           ></textarea>
-          <label htmlFor="collectionPoint">
-            Pontos de Arrecadação deste Item
-          </label>
+
+          <label htmlFor="collectionPoint">Ponto de Arrecadação deste Item</label>
           <input
             id="collectionPoint"
             type="text"
-            placeholder="Ex: Ponto de Coleta, Endereço, Cidade, nº"
+            placeholder="Ex: Rua das Flores, 123 - Centro"
             value={collectionPoint}
             onChange={(e) => setCollectionPoint(e.target.value)}
             className="input-login"
           />
         </form>
-        <FeedbackBanner message={error} />
+        <FeedbackBanner message={message.text} variant={message.type || "error"} />
         <button
-          className="button-std w-full max-w-60 mt-10 mb-20"
+          className={`button-std w-full max-w-60 mt-10 mb-20 ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
           onClick={handleSave}
+          disabled={loading}
         >
-          SALVAR
+          {loading ? "SALVANDO..." : "SALVAR"}
         </button>
       </div>
     </div>

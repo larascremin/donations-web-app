@@ -4,31 +4,34 @@ import { useMediaQuery } from "react-responsive";
 import DynamicLogin from "../../components/DynamicLogin";
 import PasswordInput from "../../components/PasswordInput";
 import FeedbackBanner from "../../components/FeedbackBanner";
-import { mockUsers } from "../../services/Mock";
 import { UserContext } from "../../hooks/UserContext";
-// import { postData } from "../../services/Methods";
 
 function Login() {
   const navigate = useNavigate();
-  const { setUser } = useContext(UserContext);
+  const { login } = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    const allUsers = [...mockUsers.doadores, ...mockUsers.organizacoes];
-    const user = allUsers.find(
-      (u) => u.email === email && u.senha === password
-    );
-
-    if (user) {
-      setUser(user);
+    try {
+      await login(email, password);
       navigate("/home");
-    } else {
-      setError("Email ou senha incorretos.");
+    } catch (err) {
+      console.error("Erro login:", err);
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        setError("E-mail ou senha incorretos.");
+      } else {
+        setError("Erro ao conectar com o servidor.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -42,11 +45,12 @@ function Login() {
         <label htmlFor="email">Insira seu e-mail</label>
         <input
           id="email"
-          type="text"
+          type="email"
           placeholder="E-mail"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="input-login mb-6"
+          required
         />
         <label htmlFor="password">Insira sua senha</label>
         <PasswordInput
@@ -58,12 +62,13 @@ function Login() {
         </Link>
         <button
           type="submit"
-          className={`button-std w-full ${isMobile ? "mt-10" : "mt-20"}`}
+          className={`button-std w-full ${isMobile ? "mt-10" : "mt-20"} ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
+          disabled={loading}
         >
-          LOGIN
+          {loading ? "ENTRANDO..." : "LOGIN"}
         </button>
       </form>
-      <div className="flex mt-2 gap-1 justify-center">
+      <div className="flex mt-6 gap-1 justify-center">
         <h6>Não possui uma conta? </h6>
         <Link to="/auth/register">Cadastre-se aqui</Link>
       </div>

@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import NavigationBar from "../../components/NavigationBar";
+import FeedbackBanner from "../../components/FeedbackBanner";
 import PasswordInput from "../../components/PasswordInput";
 import profile01 from "../../assets/images/cj-profile-01.svg";
 import { UserContext } from "../../hooks/UserContext";
@@ -95,7 +96,7 @@ function Profile() {
               src={!isDoador && user?.imagem ? user.imagem : profile01}
               className={`h-40 -mt-20 ml-20 ${
                 !isDoador
-                  ? "rounded-full border border-2 border-[var(--base-04)]"
+                  ? "rounded-full border-2 border-[var(--base-04)]"
                   : ""
               }`}
             />
@@ -106,7 +107,7 @@ function Profile() {
             src={!isDoador && user?.imagem ? user.imagem : profile01}
             className={`h-30 -mt-16 mb-10 ${
               !isDoador
-                ? "rounded-full border border-2 border-[var(--base-04)]"
+                ? "rounded-full border-2 border-[var(--base-04)]"
                 : ""
             }`}
           />
@@ -198,11 +199,8 @@ function Profile() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {error && (
-            <h3 className="text-red-700 font-semibold mt-6 text-center">
-              {error}
-            </h3>
-          )}
+          <FeedbackBanner message={error} />
+          <FeedbackBanner message={isUpdated ? "Perfil atualizado com sucesso!" : ""} variant="success" />
           <div className="flex justify-end mt-10">
             <button
               type="submit"

@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import NavigationBar from "../../components/NavigationBar";
+import FeedbackBanner from "../../components/FeedbackBanner";
 import { useLocation, useNavigate } from "react-router-dom";
 import { UserContext } from "../../hooks/UserContext";
 
@@ -131,7 +132,7 @@ function CreateDonation() {
             className="input-login"
           />
         </form>
-        {error && <h3 className="text-red-700 font-semibold mt-6">{error}</h3>}
+        <FeedbackBanner message={error} />
         <button
           className="button-std w-full max-w-60 mt-10 mb-20"
           onClick={handleSave}

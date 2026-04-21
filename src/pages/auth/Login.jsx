@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
 import DynamicLogin from "../../components/DynamicLogin";
 import PasswordInput from "../../components/PasswordInput";
+import FeedbackBanner from "../../components/FeedbackBanner";
 import { mockUsers } from "../../services/Mock";
 import { UserContext } from "../../hooks/UserContext";
 // import { postData } from "../../services/Methods";
@@ -36,7 +37,7 @@ function Login() {
       <h2 className={isMobile ? "text-center mt-4 mb-10" : "mt-4 mb-20"}>
         Bem vindo(a) de volta!
       </h2>
-      {error && <p className="mb-10 -mt-10 text-red-800 font-bold">{error}</p>}
+      <FeedbackBanner message={error} />
       <form className="max-w-md" onSubmit={handleLogin}>
         <label htmlFor="email">Insira seu e-mail</label>
         <input

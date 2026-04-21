@@ -1,4 +1,4 @@
-import { Eye, EyeClosed } from "phosphor-react";
+import { Eye, EyeClosed } from "@phosphor-icons/react";
 import { useState } from "react";
 
 const PasswordInput = ({

@@ -6,7 +6,7 @@ import {
   Basket,
 } from "@phosphor-icons/react";
 
-export const server = "http://localhost:8080";
+export const server = import.meta.env.VITE_API_URL;
 
 export const categoryColors = {
   higiene: "bg-[var(--l-blue)]",

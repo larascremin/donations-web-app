@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
 import DynamicLogin from "../../components/DynamicLogin";
 import PasswordInput from "../../components/PasswordInput";
@@ -125,7 +125,7 @@ function Register() {
       </button>
       <div className="flex mt-2 gap-1 justify-center">
         <h6>Já possui uma conta? </h6>
-        <a href="/auth">Acesse aqui</a>
+        <Link to="/auth">Acesse aqui</Link>
       </div>
     </DynamicLogin>
   );

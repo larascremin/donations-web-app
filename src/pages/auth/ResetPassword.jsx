@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
 import DynamicLogin from "../../components/DynamicLogin";
 // import { postData } from "../../services/Methods";
@@ -42,7 +42,7 @@ function Reset() {
       </button>
       <div className="flex mt-2 gap-1 justify-center">
         <h6>Deseja voltar ao Login? </h6>
-        <a href="/auth">Clique Aqui</a>
+        <Link to="/auth">Clique Aqui</Link>
       </div>
     </DynamicLogin>
   );

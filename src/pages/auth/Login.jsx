@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
 import DynamicLogin from "../../components/DynamicLogin";
 import PasswordInput from "../../components/PasswordInput";
@@ -52,9 +52,9 @@ function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <a href="/auth/reset-password" className="text-right mt-1">
+        <Link to="/auth/reset-password" className="text-right mt-1">
           Esqueceu a senha
-        </a>
+        </Link>
         <button
           type="submit"
           className={`button-std w-full ${isMobile ? "mt-10" : "mt-20"}`}
@@ -64,7 +64,7 @@ function Login() {
       </form>
       <div className="flex mt-2 gap-1 justify-center">
         <h6>Não possui uma conta? </h6>
-        <a href="/auth/register">Cadastre-se aqui</a>
+        <Link to="/auth/register">Cadastre-se aqui</Link>
       </div>
     </DynamicLogin>
   );

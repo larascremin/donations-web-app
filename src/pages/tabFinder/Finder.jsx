@@ -235,11 +235,13 @@ function Finder() {
                 </div>
               </div>
               <hr className="my-8" />
-              <div className="flex justify-center">
-                <button className="button-std px-10" onClick={handleDonate}>
-                  QUERO DOAR
-                </button>
-              </div>
+              {user?.tipo === "DOADOR" && (
+                <div className="flex justify-center">
+                  <button className="button-std px-10" onClick={handleDonate}>
+                    QUERO DOAR
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}

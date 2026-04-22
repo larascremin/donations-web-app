@@ -1,5 +1,6 @@
 import { useMediaQuery } from "react-responsive";
 import NavigationBar from "../../components/NavigationBar";
+import FeedbackBanner from "../../components/FeedbackBanner";
 import { Check, X, PencilSimple } from "@phosphor-icons/react";
 import donation01 from "../../assets/images/cj-donation-01.svg";
 import donation02 from "../../assets/images/cj-donation-02.svg";
@@ -14,6 +15,7 @@ function Donation() {
   const { user } = useContext(UserContext);
   const [itemsList, setItemsList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState({ text: "", type: "" });
   const isDonator = user?.tipo === "DOADOR";
 
   useEffect(() => {
@@ -35,7 +37,7 @@ function Donation() {
       }
     } catch (error) {
       console.error("Erro ao buscar dados:", error);
-      alert("Não foi possível carregar as doações.");
+      setMessage({ text: "Não foi possível carregar as doações.", type: "error" });
     } finally {
       setLoading(false);
     }
@@ -58,7 +60,7 @@ function Donation() {
       fetchData();
     } catch (error) {
       console.error("Erro ao confirmar:", error);
-      alert("Erro ao confirmar doação.");
+      setMessage({ text: "Erro ao confirmar doação.", type: "error" });
     }
   };
 
@@ -71,7 +73,7 @@ function Donation() {
       setItemsList((prev) => prev.filter((item) => item.id !== id));
     } catch (error) {
       console.error("Erro ao excluir:", error);
-      alert("Erro ao excluir item.");
+      setMessage({ text: "Erro ao excluir item.", type: "error" });
     }
   };
 
@@ -123,6 +125,8 @@ function Donation() {
             {isDonator ? "SUAS DOAÇÕES" : "DOAÇÕES ABERTAS"}
           </h1>
         )}
+
+        <FeedbackBanner message={message.text} variant={message.type || "error"} />
 
         {/* --- LISTAGEM --- */}
         <div className="w-full max-w-200 mb-20">

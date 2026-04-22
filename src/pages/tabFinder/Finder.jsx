@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { useMediaQuery } from "react-responsive";
 import { MagnifyingGlass, X, MapPinLine } from "@phosphor-icons/react";
 import NavigationBar from "../../components/NavigationBar";
+import FeedbackBanner from "../../components/FeedbackBanner";
 import DonationCard from "../../components/DonationCard";
 import { categoryColors, categoryIcons } from "../../services/Variables";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +18,7 @@ function Finder() {
 
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [donateMessage, setDonateMessage] = useState({ text: "", type: "" });
 
   useEffect(() => {
     document.body.style.overflow = selectedDonation ? "hidden" : "auto";
@@ -79,11 +81,12 @@ function Finder() {
 
   const handleDonate = async () => {
     if (!user) {
-      alert("Você precisa fazer login para realizar uma doação.");
       navigate("/auth");
       return;
     }
     if (!selectedDonation) return;
+
+    setDonateMessage({ text: "", type: "" });
 
     try {
       await api.post("/doacoes", {
@@ -93,15 +96,14 @@ function Finder() {
         itemSolicitadoId: selectedDonation.id,
       });
 
-      alert("Intenção de doação registrada com sucesso! Veja em 'Minhas Doações'.");
       setSelectedDonation(null);
       navigate("/donation");
     } catch (error) {
       console.error("Erro ao doar:", error);
-      alert(
-        error.response?.data?.message ||
-          "Erro ao registrar doação. Tente novamente."
-      );
+      setDonateMessage({
+        text: error.response?.data?.message || "Erro ao registrar doação. Tente novamente.",
+        type: "error",
+      });
     }
   };
 
@@ -235,8 +237,9 @@ function Finder() {
                 </div>
               </div>
               <hr className="my-8" />
+              <FeedbackBanner message={donateMessage.text} variant={donateMessage.type || "error"} />
               {user?.tipo === "DOADOR" && (
-                <div className="flex justify-center">
+                <div className="flex justify-center mt-4">
                   <button className="button-std px-10" onClick={handleDonate}>
                     QUERO DOAR
                   </button>

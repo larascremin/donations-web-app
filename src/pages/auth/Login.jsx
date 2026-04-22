@@ -1,9 +1,9 @@
 import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
+import { toast } from "react-toastify";
 import DynamicLogin from "../../components/DynamicLogin";
 import PasswordInput from "../../components/PasswordInput";
-import FeedbackBanner from "../../components/FeedbackBanner";
 import { UserContext } from "../../hooks/UserContext";
 
 function Login() {
@@ -11,13 +11,11 @@ function Login() {
   const { login } = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     try {
@@ -26,9 +24,9 @@ function Login() {
     } catch (err) {
       console.error("Erro login:", err);
       if (err.response?.status === 401 || err.response?.status === 403) {
-        setError("E-mail ou senha incorretos.");
+        toast.error("E-mail ou senha incorretos.");
       } else {
-        setError("Erro ao conectar com o servidor.");
+        toast.error("Erro ao conectar com o servidor.");
       }
     } finally {
       setLoading(false);
@@ -40,7 +38,6 @@ function Login() {
       <h2 className={isMobile ? "text-center mt-4 mb-10" : "mt-4 mb-20"}>
         Bem vindo(a) de volta!
       </h2>
-      <FeedbackBanner message={error} />
       <form className="max-w-md" onSubmit={handleLogin}>
         <label htmlFor="email">Insira seu e-mail</label>
         <input

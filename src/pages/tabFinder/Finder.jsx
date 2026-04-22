@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { useMediaQuery } from "react-responsive";
 import { MagnifyingGlass, X, MapPinLine } from "@phosphor-icons/react";
 import NavigationBar from "../../components/NavigationBar";
-import FeedbackBanner from "../../components/FeedbackBanner";
+import { toast } from "react-toastify";
 import DonationCard from "../../components/DonationCard";
 import { categoryColors, categoryIcons } from "../../services/Variables";
 import { useNavigate } from "react-router-dom";
@@ -18,7 +18,6 @@ function Finder() {
 
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [donateMessage, setDonateMessage] = useState({ text: "", type: "" });
 
   useEffect(() => {
     document.body.style.overflow = selectedDonation ? "hidden" : "auto";
@@ -86,8 +85,6 @@ function Finder() {
     }
     if (!selectedDonation) return;
 
-    setDonateMessage({ text: "", type: "" });
-
     try {
       await api.post("/doacoes", {
         titulo: selectedDonation.title,
@@ -100,10 +97,7 @@ function Finder() {
       navigate("/donation");
     } catch (error) {
       console.error("Erro ao doar:", error);
-      setDonateMessage({
-        text: error.response?.data?.message || "Erro ao registrar doação. Tente novamente.",
-        type: "error",
-      });
+      toast.error(error.response?.data?.message || "Erro ao registrar doação. Tente novamente.");
     }
   };
 
@@ -237,7 +231,6 @@ function Finder() {
                 </div>
               </div>
               <hr className="my-8" />
-              <FeedbackBanner message={donateMessage.text} variant={donateMessage.type || "error"} />
               {user?.tipo === "DOADOR" && (
                 <div className="flex justify-center mt-4">
                   <button className="button-std px-10" onClick={handleDonate}>

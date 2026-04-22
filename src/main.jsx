@@ -2,6 +2,8 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { UserProvider } from "./hooks/UserContext.jsx";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import Home from "./pages/tabHome/Home";
 import Login from "./pages/auth/Login";
@@ -17,6 +19,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
+    <ToastContainer position="top-right" autoClose={4000} />
     <UserProvider>
       <Router>
         <Routes>

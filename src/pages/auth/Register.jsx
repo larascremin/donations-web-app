@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMediaQuery } from "react-responsive";
+import { toast } from "react-toastify";
 import DynamicLogin from "../../components/DynamicLogin";
 import PasswordInput from "../../components/PasswordInput";
-import FeedbackBanner from "../../components/FeedbackBanner";
 import api from "../../services/api";
 
 function Register() {
@@ -14,28 +14,19 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [accountType, setAccountType] = useState("INSTITUICAO");
-
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
-
-    const newUser = {
-      nomeCompleto: name,
-      email,
-      senha: password,
-      tipo: accountType,
-    };
 
     try {
-      await api.post("/users", newUser);
+      await api.post("/users", { nomeCompleto: name, email, senha: password, tipo: accountType });
+      toast.success("Conta criada com sucesso! Faça login.");
       navigate("/auth");
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || "Erro ao criar conta. Verifique os dados e tente novamente.");
+      toast.error(err.response?.data?.message || "Erro ao criar conta. Verifique os dados e tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -46,16 +37,14 @@ function Register() {
       <h2 className={isMobile ? "text-center mt-4 mb-6" : "mt-4 mb-16"}>
         Crie sua conta
       </h2>
-      <FeedbackBanner message={error} />
       <form className="max-w-md mb-10 mt-4" onSubmit={handleRegister}>
         <div className="flex mb-6 bg-transparent rounded-lg overflow-hidden border border-[var(--base-04)]">
           <button
             type="button"
             className={`flex-1 py-3 px-4 text-sm font-semibold text-center cursor-pointer leading-tight transition-colors
-              ${
-                accountType === "INSTITUICAO"
-                  ? "bg-[var(--base-05)] text-[var(--base-01)] border-[5px] border-[var(--base-01)] rounded-lg"
-                  : "bg-[var(--base-01)] text-[var(--base-05)] border-transparent"
+              ${accountType === "INSTITUICAO"
+                ? "bg-[var(--base-05)] text-[var(--base-01)] border-[5px] border-[var(--base-01)] rounded-lg"
+                : "bg-[var(--base-01)] text-[var(--base-05)] border-transparent"
               }`}
             onClick={() => setAccountType("INSTITUICAO")}
           >
@@ -64,10 +53,9 @@ function Register() {
           <button
             type="button"
             className={`flex-1 py-3 px-4 text-sm font-semibold text-center cursor-pointer leading-tight transition-colors
-              ${
-                accountType === "DOADOR"
-                  ? "bg-[var(--base-05)] text-[var(--base-01)] border-[5px] border-[var(--base-01)] rounded-lg"
-                  : "bg-[var(--base-01)] text-[var(--base-05)] border-transparent"
+              ${accountType === "DOADOR"
+                ? "bg-[var(--base-05)] text-[var(--base-01)] border-[5px] border-[var(--base-01)] rounded-lg"
+                : "bg-[var(--base-01)] text-[var(--base-05)] border-transparent"
               }`}
             onClick={() => setAccountType("DOADOR")}
           >
@@ -78,32 +66,20 @@ function Register() {
         <label htmlFor="name">
           {accountType === "INSTITUICAO" ? "Insira o nome da Instituição/Org" : "Insira seu nome completo"}
         </label>
-        <input
-          id="name"
-          type="text"
+        <input id="name" type="text"
           placeholder={accountType === "INSTITUICAO" ? "Nome da Organização" : "Nome Sobrenome"}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="input-login mb-5"
-          required
+          value={name} onChange={(e) => setName(e.target.value)}
+          className="input-login mb-5" required
         />
 
         <label htmlFor="email">Insira seu e-mail</label>
-        <input
-          id="email"
-          type="email"
-          placeholder="exemplo@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="input-login mb-5"
-          required
+        <input id="email" type="email" placeholder="exemplo@email.com"
+          value={email} onChange={(e) => setEmail(e.target.value)}
+          className="input-login mb-5" required
         />
 
         <label htmlFor="password">Crie uma senha</label>
-        <PasswordInput
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} />
 
         <button
           type="submit"

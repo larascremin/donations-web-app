@@ -2,17 +2,21 @@ import React, { useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import NavigationBar from "../../components/NavigationBar";
 import FeedbackBanner from "../../components/FeedbackBanner";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 
 function CreateDonation() {
   const navigate = useNavigate();
+  const location = useLocation();
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
-  const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("");
-  const [description, setDescription] = useState("");
-  const [collectionPoint, setCollectionPoint] = useState("");
+  const doacao = location.state?.doacao || null;
+  const isEditing = !!doacao;
+
+  const [title, setTitle] = useState(doacao?.titulo || "");
+  const [category, setCategory] = useState(doacao?.categoria || "");
+  const [description, setDescription] = useState(doacao?.descricao || "");
+  const [collectionPoint, setCollectionPoint] = useState(doacao?.pontosArrecadacao?.[0] || "");
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
@@ -34,11 +38,17 @@ function CreateDonation() {
         pontosArrecadacao: [collectionPoint],
       };
 
-      await api.post("/itens", payload);
-      setMessage({ text: "Solicitação criada com sucesso!", type: "success" });
+      if (isEditing) {
+        await api.put(`/itens/${doacao.id}`, payload);
+        setMessage({ text: "Solicitação atualizada com sucesso!", type: "success" });
+      } else {
+        await api.post("/itens", payload);
+        setMessage({ text: "Solicitação criada com sucesso!", type: "success" });
+      }
+
       setTimeout(() => navigate("/donation"), 1500);
     } catch (err) {
-      console.error("Erro ao criar solicitação:", err);
+      console.error("Erro ao salvar solicitação:", err);
       setMessage({
         text: err.response?.data?.message || "Erro ao salvar solicitação. Tente novamente.",
         type: "error",
@@ -60,11 +70,11 @@ function CreateDonation() {
       >
         {isMobile ? (
           <>
-            <h2 className="p-4">CRIAR SOLICITAÇÃO</h2>
+            <h2 className="p-4">{isEditing ? "EDITAR SOLICITAÇÃO" : "CRIAR SOLICITAÇÃO"}</h2>
             <hr />
           </>
         ) : (
-          <h1 className="p-10">CRIAR SOLICITAÇÃO</h1>
+          <h1 className="p-10">{isEditing ? "EDITAR SOLICITAÇÃO" : "CRIAR SOLICITAÇÃO"}</h1>
         )}
 
         <form className="max-w-200 w-full" onSubmit={(e) => e.preventDefault()}>
@@ -118,7 +128,7 @@ function CreateDonation() {
           onClick={handleSave}
           disabled={loading}
         >
-          {loading ? "SALVANDO..." : "SALVAR"}
+          {loading ? "SALVANDO..." : isEditing ? "ATUALIZAR" : "SALVAR"}
         </button>
       </div>
     </div>

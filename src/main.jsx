@@ -19,7 +19,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <ToastContainer position="top-right" autoClose={4000} />
+    <ToastContainer position="top-right" autoClose={4000} theme="colored" />
     <UserProvider>
       <Router>
         <Routes>

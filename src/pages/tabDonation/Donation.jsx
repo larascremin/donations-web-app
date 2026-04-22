@@ -57,15 +57,38 @@ function Donation() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Tem certeza que deseja excluir?")) return;
-    try {
-      await api.delete(isDonator ? `/doacoes/${id}` : `/itens/${id}`);
-      setItemsList((prev) => prev.filter((item) => item.id !== id));
-    } catch (error) {
-      console.error("Erro ao excluir:", error);
-      toast.error("Erro ao excluir item.");
-    }
+  const handleDelete = (id) => {
+    toast(
+      ({ closeToast }) => (
+        <div>
+          <p className="font-semibold mb-3">Tem certeza que deseja excluir?</p>
+          <div className="flex gap-2">
+            <button
+              className="bg-red-500 text-white px-4 py-1 rounded font-medium"
+              onClick={async () => {
+                closeToast();
+                try {
+                  await api.delete(isDonator ? `/doacoes/${id}` : `/itens/${id}`);
+                  setItemsList((prev) => prev.filter((item) => item.id !== id));
+                } catch (error) {
+                  console.error("Erro ao excluir:", error);
+                  toast.error("Erro ao excluir item.");
+                }
+              }}
+            >
+              Sim, excluir
+            </button>
+            <button
+              className="bg-gray-200 text-gray-700 px-4 py-1 rounded font-medium"
+              onClick={closeToast}
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      ),
+      { autoClose: false, closeOnClick: false }
+    );
   };
 
   return (

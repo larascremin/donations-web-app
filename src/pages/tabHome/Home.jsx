@@ -48,7 +48,7 @@ function Home() {
 
   return (
     <div className="flex">
-      <div className={isMobile ? "" : "w-[360px] h-screen"}>
+      <div className={isMobile ? "" : "w-[280px] h-screen"}>
         <NavigationBar />
       </div>
       <div className="flex-1 h-screen flex flex-col justify-between items-center overflow-y-auto">

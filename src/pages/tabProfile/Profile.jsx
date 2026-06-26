@@ -1,8 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import NavigationBar from "../../components/NavigationBar";
 import PasswordInput from "../../components/PasswordInput";
 import profile01 from "../../assets/images/cj-profile-01.svg";
+import { Camera } from "@phosphor-icons/react";
 import { toast } from "react-toastify";
 import { UserContext } from "../../hooks/UserContext";
 import api from "../../services/api";
@@ -18,7 +19,10 @@ function Profile() {
   const [street, setStreet] = useState("");
   const [neighborhood, setNeighborhood] = useState("");
   const [number, setNumber] = useState("");
+  const [cnpj, setCnpj] = useState("");
   const [loading, setLoading] = useState(false);
+  const [avatarLoading, setAvatarLoading] = useState(false);
+  const avatarInputRef = useRef(null);
 
   const isDoador = user?.tipo === "DOADOR";
 
@@ -38,9 +42,11 @@ function Profile() {
           setStreet(userData.rua || "");
           setNeighborhood(userData.bairro || "");
           setNumber(userData.numero || "");
+          setCnpj(userData.cnpj || "");
         }
       } catch (error) {
         console.error("Erro ao carregar perfil:", error);
+        toast.error("Erro ao carregar perfil.");
       }
     };
     fetchUserProfile();
@@ -48,19 +54,24 @@ function Profile() {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+    if (password && password.length < 6) {
+      toast.error("A nova senha deve ter pelo menos 6 caracteres.");
+      return;
+    }
     setLoading(true);
 
     try {
       const payload = {
         nomeCompleto: name,
         email,
-        senha: password,
         tipo: user.tipo,
         telefone: phone,
         cidade: city,
         bairro: neighborhood,
         rua: street,
         numero: number,
+        cnpj,
+        ...(password ? { senha: password } : {}),
       };
       const response = await api.put("/users/me", payload);
       setUser(response.data);
@@ -69,30 +80,81 @@ function Profile() {
       setPassword("");
     } catch (error) {
       console.error("Erro ao atualizar:", error);
-      if (error.response?.status === 400) {
-        toast.error("Erro: Verifique os campos. A senha pode ser obrigatória.");
-      } else {
-        toast.error("Erro ao atualizar perfil. Tente novamente.");
-      }
+      const errors = error.response?.data?.errors;
+      toast.error(
+        errors?.length
+          ? errors.join(" | ")
+          : error.response?.data?.message || "Erro ao atualizar perfil."
+      );
     } finally {
       setLoading(false);
     }
   };
 
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    setAvatarLoading(true);
+    try {
+      const response = await api.post("/users/me/avatar", formData);
+      setUser(response.data);
+      localStorage.setItem("user", JSON.stringify(response.data));
+      toast.success("Foto atualizada com sucesso!");
+    } catch (error) {
+      if (error.response?.status === 403) {
+        toast.error("Upload de avatar não disponível para este perfil.");
+      } else {
+        toast.error(error.response?.data?.message || "Erro ao enviar foto.");
+      }
+    } finally {
+      setAvatarLoading(false);
+      e.target.value = "";
+    }
+  };
+
+  const avatarSrc = user?.avatarUrl
+    ? `${import.meta.env.VITE_API_URL}${user.avatarUrl}`
+    : profile01;
+
   return (
     <div className="flex">
-      <div className={isMobile ? "" : "w-[360px] h-screen"}>
+      <div className={isMobile ? "" : "w-[280px] h-screen"}>
         <NavigationBar />
       </div>
       <div className="flex-1 flex flex-col items-center overflow-y-auto">
         <div className="w-full">
           <div className={`w-full bg-[var(--blue)] rounded-b-2xl ${isMobile ? "h-30" : "h-40"}`}></div>
-          <img
-            src={user?.avatarUrl ? `${import.meta.env.VITE_API_URL}${user.avatarUrl}` : profile01}
-            className={`h-30 -mt-16 mb-4 ml-4 md:h-40 md:-mt-20 md:ml-20 md:mb-10 ${
-              !isDoador ? "rounded-full border-2 border-[var(--base-04)]" : ""
-            }`}
-          />
+          <div className="relative inline-block">
+            <img
+              src={avatarSrc}
+              className={`h-30 -mt-16 mb-4 ml-4 md:h-40 md:-mt-20 md:ml-20 md:mb-10 ${
+                !isDoador ? "rounded-full border-2 border-[var(--base-04)]" : ""
+              }`}
+              alt="Avatar"
+            />
+            <button
+              type="button"
+              onClick={() => avatarInputRef.current?.click()}
+              disabled={avatarLoading}
+              title="Alterar foto"
+              className={`absolute bottom-5 right-0 bg-[var(--base-03)] hover:bg-[var(--base-04)] transition-colors rounded-full p-2 shadow-md ${
+                avatarLoading ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
+              }`}
+            >
+              <Camera size={18} color="var(--base-06)" />
+            </button>
+            <input
+              ref={avatarInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={handleAvatarUpload}
+            />
+          </div>
         </div>
 
         <form className="w-full max-w-200 px-4 mb-30" onSubmit={handleUpdate}>
@@ -100,28 +162,36 @@ function Profile() {
 
           <label htmlFor="name">{isDoador ? "Nome completo" : "Nome da Org/Instituição"}</label>
           <input id="name" type="text" value={name}
-            onChange={(e) => setName(e.target.value)} className="input-login mb-6"
+            onChange={(e) => setName(e.target.value)} className="input-login mb-6" required
           />
 
           <label htmlFor="email">E-mail</label>
           <input id="email" type="email" value={email}
-            onChange={(e) => setEmail(e.target.value)} className="input-login mb-6 w-full"
+            onChange={(e) => setEmail(e.target.value)} className="input-login mb-6 w-full" required
           />
 
           {!isDoador && (
             <>
+              <label htmlFor="cnpj">CNPJ</label>
+              <input id="cnpj" type="text" placeholder="00.000.000/0001-00"
+                value={cnpj} onChange={(e) => setCnpj(e.target.value)} className="input-login mb-6"
+              />
+
               <label htmlFor="phone">Telefone de Contato</label>
               <input id="phone" type="text" placeholder="(00) 00000-0000"
                 value={phone} onChange={(e) => setPhone(e.target.value)} className="input-login mb-6"
               />
+
               <label htmlFor="city">Cidade</label>
               <input id="city" type="text" value={city}
                 onChange={(e) => setCity(e.target.value)} className="input-login mb-6 w-full"
               />
+
               <label htmlFor="street">Endereço (Rua)</label>
               <input id="street" type="text" value={street}
                 onChange={(e) => setStreet(e.target.value)} className="input-login mb-6 w-full"
               />
+
               <div className="flex w-full gap-4">
                 <div className="flex flex-col w-full">
                   <label htmlFor="neighborhood">Bairro</label>
@@ -140,10 +210,10 @@ function Profile() {
           )}
 
           <label htmlFor="password">
-            Confirmar Senha ou Nova Senha
-            <span className="text-sm text-red-500 ml-1">(Obrigatório*)</span>
+            Nova Senha
+            <span className="text-sm text-[var(--base-04)] ml-1">(deixe em branco para não alterar)</span>
           </label>
-          <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} />
+          <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} minLength={6} />
 
           <div className="flex justify-end mt-10">
             <button type="submit" disabled={loading}

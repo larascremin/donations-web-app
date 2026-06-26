@@ -15,6 +15,7 @@ function Donation() {
   const { user } = useContext(UserContext);
   const [itemsList, setItemsList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState("");
   const isDonator = user?.tipo === "DOADOR";
 
   useEffect(() => {
@@ -27,7 +28,11 @@ function Donation() {
       const response = isDonator
         ? await api.get("/doacoes/me")
         : await api.get("/itens");
-      setItemsList(response.data.content || []);
+      const all = response.data.content || [];
+      const filtered = isDonator
+        ? all
+        : all.filter((item) => item.solicitanteNome === user?.nomeCompleto);
+      setItemsList(filtered);
     } catch (error) {
       console.error("Erro ao buscar dados:", error);
       toast.error("Não foi possível carregar as doações.");
@@ -48,8 +53,10 @@ function Donation() {
   };
 
   const handleConfirm = async (id) => {
+    if (!window.confirm("Confirmar entrega desta doação?")) return;
     try {
       await api.put(`/doacoes/${id}`);
+      toast.success("Doação confirmada!");
       fetchData();
     } catch (error) {
       console.error("Erro ao confirmar:", error);
@@ -58,22 +65,36 @@ function Donation() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Tem certeza que deseja excluir?")) return;
+    const msg = isDonator
+      ? "Cancelar esta doação? Essa ação não pode ser desfeita."
+      : "Excluir esta solicitação? Todas as doações vinculadas também serão removidas.";
+    if (!window.confirm(msg)) return;
+
     try {
       await api.delete(isDonator ? `/doacoes/${id}` : `/itens/${id}`);
       setItemsList((prev) => prev.filter((item) => item.id !== id));
+      toast.success(isDonator ? "Doação cancelada." : "Solicitação excluída.");
     } catch (error) {
-      console.error("Erro ao excluir:", error);
-      toast.error("Erro ao excluir item.");
+      console.error("Erro ao deletar:", error);
+      if (error.response?.status === 403) {
+        toast.error("Você não pode excluir a solicitação de outra instituição.");
+      } else {
+        toast.error("Erro ao excluir. Tente novamente.");
+      }
     }
   };
 
+  const visibleItems = isDonator && statusFilter
+    ? itemsList.filter((item) => item.status === statusFilter)
+    : itemsList;
+
   return (
     <div className="flex">
-      <div className={isMobile ? "" : "w-[360px] h-screen"}>
+      <div className={isMobile ? "" : "w-[280px] h-screen"}>
         <NavigationBar />
       </div>
       <div className={`flex-1 flex flex-col items-center overflow-y-auto ${isMobile ? "p-4" : "px-10 py-10"}`}>
+
         {isDonator ? (
           <div className="relative w-full flex flex-col justify-center items-center bg-[var(--l-pink)] max-w-140 py-6 gap-4 rounded-2xl overflow-hidden">
             <h2 className="z-10">{isMobile ? "Faça uma nova doação" : "Faça uma nova doação agora"}</h2>
@@ -90,28 +111,70 @@ function Donation() {
           </div>
         )}
 
-        {isMobile ? (
-          <h2 className="p-6">{isDonator ? "SUAS DOAÇÕES" : "DOAÇÕES ABERTAS"}</h2>
-        ) : (
-          <h1 className="p-10">{isDonator ? "SUAS DOAÇÕES" : "DOAÇÕES ABERTAS"}</h1>
-        )}
+        <div className="w-full max-w-200 mt-6 mb-2 flex items-center justify-between">
+          {isMobile ? (
+            <h2>{isDonator ? "SUAS DOAÇÕES" : "DOAÇÕES ABERTAS"}</h2>
+          ) : (
+            <h1>{isDonator ? "SUAS DOAÇÕES" : "DOAÇÕES ABERTAS"}</h1>
+          )}
+
+          {isDonator && itemsList.length > 0 && (
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="text-sm border border-[var(--base-03)] rounded-lg px-3 py-2 bg-[var(--base-01)] text-[var(--base-05)]"
+            >
+              <option value="">Todos os status</option>
+              <option value="PENDENTE">Pendentes</option>
+              <option value="CONFIRMADA">Confirmadas</option>
+            </select>
+          )}
+        </div>
 
         <div className="w-full max-w-200 mb-20">
           {loading ? (
-            <p className="text-center text-[var(--base-04)]">Carregando...</p>
-          ) : itemsList.length === 0 ? (
-            <p className="text-center text-[var(--base-04)] mt-4">Nenhum item encontrado.</p>
+            <div className="flex flex-col gap-3 mt-4">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="h-20 rounded-xl bg-[var(--base-03)] animate-pulse" />
+              ))}
+            </div>
+          ) : visibleItems.length === 0 ? (
+            <div className="flex flex-col items-center gap-4 mt-10 text-[var(--base-04)]">
+              <p>
+                {statusFilter
+                  ? `Nenhuma doação com status "${statusFilter}".`
+                  : isDonator
+                  ? "Você ainda não fez nenhuma doação."
+                  : "Você ainda não tem solicitações abertas."}
+              </p>
+              {!statusFilter && (
+                <button
+                  className="button-std px-8"
+                  onClick={() => navigate(isDonator ? "/finder" : "/donation/form")}
+                >
+                  {isDonator ? "ENCONTRAR DOAÇÕES" : "CRIAR SOLICITAÇÃO"}
+                </button>
+              )}
+            </div>
           ) : (
             <>
-              {isDonator && itemsList.map((doacao) => (
+              {isDonator && visibleItems.map((doacao) => (
                 <div key={doacao.id}
                   className={`flex justify-between items-center border border-[var(--base-03)] rounded-lg p-3 mb-4
                     ${doacao.status === "CONFIRMADA" ? "bg-white" : "bg-[var(--base-02)]"}`}
                 >
                   <div>
                     <h3 className="mb-1">{doacao.titulo}</h3>
+                    {doacao.comentario && (
+                      <p className="text-xs text-[var(--base-04)] mb-1 italic">"{doacao.comentario}"</p>
+                    )}
                     <p className="text-sm">
-                      Status: <span className={doacao.status === "CONFIRMADA" ? "text-green-600 font-bold" : "text-orange-500"}>
+                      Status:{" "}
+                      <span className={
+                        doacao.status === "CONFIRMADA"
+                          ? "text-green-600 font-bold"
+                          : "text-orange-500"
+                      }>
                         {doacao.status}
                       </span>
                     </p>
@@ -119,19 +182,21 @@ function Donation() {
                   {doacao.status === "CONFIRMADA" ? (
                     <div className="flex items-center">
                       {!isMobile && <Check size={40} color="var(--pink)" className="mr-4" />}
-                      <button onClick={() => handleDelete(doacao.id)} className="p-2">
+                      <button onClick={() => handleDelete(doacao.id)} className="p-2" title="Remover">
                         <X size={24} color="var(--base-04)" />
                       </button>
                     </div>
                   ) : (
                     <div className="flex gap-2">
-                      <button onClick={() => handleConfirm(doacao.id)}
+                      <button
+                        onClick={() => handleConfirm(doacao.id)}
                         className="flex w-14 h-14 flex-shrink-0 bg-[var(--base-04)] rounded-md justify-center items-center shadow-md hover:bg-[var(--green)] transition-colors"
                         title="Confirmar entrega"
                       >
                         <Check size={40} color="var(--base-01)" />
                       </button>
-                      <button onClick={() => handleDelete(doacao.id)}
+                      <button
+                        onClick={() => handleDelete(doacao.id)}
                         className="flex w-14 h-14 flex-shrink-0 bg-red-400 rounded-md justify-center items-center shadow-md hover:bg-red-500 transition-colors"
                         title="Cancelar doação"
                       >
@@ -142,7 +207,7 @@ function Donation() {
                 </div>
               ))}
 
-              {!isDonator && itemsList.map((item) => (
+              {!isDonator && visibleItems.map((item) => (
                 <div key={item.id}
                   className="flex justify-between items-center border border-[var(--base-03)] rounded-lg p-3 mb-4 bg-white"
                 >
@@ -155,16 +220,22 @@ function Donation() {
                       </p>
                     )}
                     <p className="text-sm mt-1">Criado em: {formatDate(item.dataCriacao)}</p>
-                    <p className="text-xs text-[var(--base-04)]">Doações recebidas: {item.doacoesRecebidas}</p>
+                    <p className="text-xs text-[var(--base-04)]">
+                      Doações recebidas: <span className="font-semibold">{item.doacoesRecebidas}</span>
+                    </p>
                   </div>
                   <div className="flex gap-3">
-                    <button className="flex w-14 h-14 bg-[var(--base-04)] rounded-md justify-center items-center shadow-md hover:opacity-80">
-                      <PencilSimple size={36} color="var(--base-01)"
-                        onClick={() => navigate("/donation/form", { state: { doacao: item } })}
-                      />
+                    <button
+                      className="flex w-14 h-14 bg-[var(--base-04)] rounded-md justify-center items-center shadow-md hover:opacity-80"
+                      onClick={() => navigate("/donation/form", { state: { doacao: item } })}
+                      title="Editar"
+                    >
+                      <PencilSimple size={36} color="var(--base-01)" />
                     </button>
-                    <button onClick={() => handleDelete(item.id)}
+                    <button
+                      onClick={() => handleDelete(item.id)}
                       className="flex w-14 h-14 bg-[var(--base-04)] rounded-md justify-center items-center shadow-md hover:bg-red-400 transition-colors"
+                      title="Excluir"
                     >
                       <X size={36} color="var(--base-01)" />
                     </button>

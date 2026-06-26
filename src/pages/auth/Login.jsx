@@ -22,11 +22,10 @@ function Login() {
       await login(email, password);
       navigate("/home");
     } catch (err) {
-      console.error("Erro login:", err);
-      if (err.response?.status === 401 || err.response?.status === 403) {
+      if (err.response) {
         toast.error("E-mail ou senha incorretos.");
       } else {
-        toast.error("Erro ao conectar com o servidor.");
+        toast.error("Erro ao conectar com o servidor. Verifique sua conexão.");
       }
     } finally {
       setLoading(false);

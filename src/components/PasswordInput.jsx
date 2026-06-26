@@ -6,6 +6,9 @@ const PasswordInput = ({
   onChange,
   name = "password",
   id = "password",
+  required,
+  minLength,
+  placeholder = "Senha",
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -18,7 +21,9 @@ const PasswordInput = ({
         className="input-login w-full pr-10"
         value={value}
         onChange={onChange}
-        placeholder="Senha"
+        placeholder={placeholder}
+        required={required}
+        minLength={minLength}
       />
       <button
         type="button"

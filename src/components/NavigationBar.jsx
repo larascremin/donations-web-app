@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import { useMediaQuery } from "react-responsive";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -8,68 +9,73 @@ import {
   SignOut,
 } from "@phosphor-icons/react";
 import logo from "../assets/images/logo.svg";
+import { UserContext } from "../hooks/UserContext";
 
 function NavigationBar() {
   const navigate = useNavigate();
   const location = useLocation();
   const path = location.pathname;
   const isMobile = useMediaQuery({ maxWidth: 768 });
+  const { logout } = useContext(UserContext);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/auth");
+  };
 
   return (
     <div>
       {isMobile ? (
         <div className="fixed bottom-0 left-0 w-full z-50 flex py-5 bg-[var(--base-02)] [box-shadow:0px_-6px_10px_rgba(0,0,0,0.12)]">
           <button
-            className="w-1/4 flex items-center justify-center"
+            className="w-1/5 flex items-center justify-center"
             onClick={() => navigate("/home")}
           >
             <House
               size={36}
-              color={
-                path.startsWith("/home") ? "var(--green)" : "var(--base-04)"
-              }
+              color={path.startsWith("/home") ? "var(--green)" : "var(--base-04)"}
               weight={path.startsWith("/home") ? "bold" : "light"}
             />
           </button>
           <button
-            className="w-1/4 flex items-center justify-center"
+            className="w-1/5 flex items-center justify-center"
             onClick={() => navigate("/finder")}
           >
             <HandHeart
               size={36}
-              color={
-                path.startsWith("/finder") ? "var(--green)" : "var(--base-04)"
-              }
+              color={path.startsWith("/finder") ? "var(--green)" : "var(--base-04)"}
               weight={path.startsWith("/finder") ? "bold" : "light"}
             />
           </button>
           <button
-            className="w-1/4 flex items-center justify-center"
+            className="w-1/5 flex items-center justify-center"
             onClick={() => navigate("/donation")}
           >
             <PlusCircle
               size={36}
-              color={
-                path.startsWith("/donation") ? "var(--green)" : "var(--base-04)"
-              }
+              color={path.startsWith("/donation") ? "var(--green)" : "var(--base-04)"}
               weight={path.startsWith("/donation") ? "bold" : "light"}
             />
           </button>
           <button
-            className="w-1/4 flex items-center justify-center"
+            className="w-1/5 flex items-center justify-center"
             onClick={() => navigate("/profile")}
           >
             <User
               size={36}
-              color={
-                path.startsWith("/profile") ? "var(--green)" : "var(--base-04)"
-              }
+              color={path.startsWith("/profile") ? "var(--green)" : "var(--base-04)"}
               weight={path.startsWith("/profile") ? "bold" : "light"}
             />
           </button>
+          <button
+            className="w-1/5 flex items-center justify-center"
+            onClick={handleLogout}
+          >
+            <SignOut size={36} color="var(--base-04)" weight="light" />
+          </button>
         </div>
       ) : (
-        <div className="fixed bottom-0 left-0 h-full w-90 z-50 flex flex-col p-6 bg-[var(--base-02)] [box-shadow:0px_-6px_10px_rgba(0,0,0,0.2)] gap-y-8">
+        <div className="fixed bottom-0 left-0 h-full w-[280px] z-50 flex flex-col p-6 bg-[var(--base-02)] [box-shadow:0px_-6px_10px_rgba(0,0,0,0.2)] gap-y-8">
           <div className="flex w-full justify-center my-6">
             <img src={logo} className="h-18" />
           </div>
@@ -167,7 +173,7 @@ function NavigationBar() {
           </button>
           <button
             className="flex items-center rounded-lg px-4 py-2 gap-4 mt-auto"
-            onClick={() => navigate("/auth")}
+            onClick={handleLogout}
           >
             <SignOut size={32} color="var(--base-04)" weight="light" />
             <h3 className="text-[var(--base-04)]">SAIR</h3>

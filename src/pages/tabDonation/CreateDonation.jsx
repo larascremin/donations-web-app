@@ -54,7 +54,7 @@ function CreateDonation() {
 
   return (
     <div className="flex">
-      <div className={isMobile ? "" : "w-[360px] h-screen"}>
+      <div className={isMobile ? "" : "w-[280px] h-screen"}>
         <NavigationBar />
       </div>
       <div className={`flex-1 flex flex-col justify-between items-center ${isMobile ? "p-4" : "px-10"}`}>

@@ -27,12 +27,8 @@ function Donation() {
     try {
       const response = isDonator
         ? await api.get("/doacoes/me")
-        : await api.get("/itens");
-      const all = response.data.content || [];
-      const filtered = isDonator
-        ? all
-        : all.filter((item) => item.solicitanteNome === user?.nomeCompleto);
-      setItemsList(filtered);
+        : await api.get("/itens/me");
+      setItemsList(response.data.content || []);
     } catch (error) {
       console.error("Erro ao buscar dados:", error);
       toast.error("Não foi possível carregar as doações.");
@@ -52,36 +48,66 @@ function Donation() {
     }).format(date);
   };
 
-  const handleConfirm = async (id) => {
-    if (!window.confirm("Confirmar entrega desta doação?")) return;
-    try {
-      await api.put(`/doacoes/${id}`);
-      toast.success("Doação confirmada!");
-      fetchData();
-    } catch (error) {
-      console.error("Erro ao confirmar:", error);
-      toast.error("Erro ao confirmar doação.");
-    }
+  const confirmToast = (message, onConfirm) => {
+    toast(
+      ({ closeToast }) => (
+        <div>
+          <p className="font-semibold mb-3">{message}</p>
+          <div className="flex gap-2">
+            <button
+              className="bg-red-500 text-white px-4 py-1 rounded font-medium"
+              onClick={() => {
+                closeToast();
+                onConfirm();
+              }}
+            >
+              Sim
+            </button>
+            <button
+              className="bg-gray-200 text-gray-700 px-4 py-1 rounded font-medium"
+              onClick={closeToast}
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      ),
+      { autoClose: false, closeOnClick: false }
+    );
   };
 
-  const handleDelete = async (id) => {
+  const handleConfirm = (id) => {
+    confirmToast("Confirmar entrega desta doação?", async () => {
+      try {
+        await api.put(`/doacoes/${id}`);
+        toast.success("Doação confirmada!");
+        fetchData();
+      } catch (error) {
+        console.error("Erro ao confirmar:", error);
+        toast.error("Erro ao confirmar doação.");
+      }
+    });
+  };
+
+  const handleDelete = (id) => {
     const msg = isDonator
       ? "Cancelar esta doação? Essa ação não pode ser desfeita."
       : "Excluir esta solicitação? Todas as doações vinculadas também serão removidas.";
-    if (!window.confirm(msg)) return;
 
-    try {
-      await api.delete(isDonator ? `/doacoes/${id}` : `/itens/${id}`);
-      setItemsList((prev) => prev.filter((item) => item.id !== id));
-      toast.success(isDonator ? "Doação cancelada." : "Solicitação excluída.");
-    } catch (error) {
-      console.error("Erro ao deletar:", error);
-      if (error.response?.status === 403) {
-        toast.error("Você não pode excluir a solicitação de outra instituição.");
-      } else {
-        toast.error("Erro ao excluir. Tente novamente.");
+    confirmToast(msg, async () => {
+      try {
+        await api.delete(isDonator ? `/doacoes/${id}` : `/itens/${id}`);
+        setItemsList((prev) => prev.filter((item) => item.id !== id));
+        toast.success(isDonator ? "Doação cancelada." : "Solicitação excluída.");
+      } catch (error) {
+        console.error("Erro ao deletar:", error);
+        if (error.response?.status === 403) {
+          toast.error("Você não pode excluir a solicitação de outra instituição.");
+        } else {
+          toast.error("Erro ao excluir. Tente novamente.");
+        }
       }
-    }
+    });
   };
 
   const visibleItems = isDonator && statusFilter

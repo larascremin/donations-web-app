@@ -55,7 +55,8 @@ function Finder() {
       params.set("size", PAGE_SIZE);
 
       const response = await api.get(`/itens?${params.toString()}`);
-      const { content = [], totalPages: tp = 1 } = response.data;
+      const { content = [] } = response.data;
+      const tp = response.data.page?.totalPages ?? 1;
 
       const formatted = content.map((item) => {
         const dateObj = item.dataCriacao ? new Date(item.dataCriacao) : null;

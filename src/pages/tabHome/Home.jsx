@@ -29,7 +29,7 @@ function Home() {
   const fetchStats = async () => {
     try {
       const resItens = await api.get("/itens?size=1");
-      setTotalSolicitacoes(resItens.data.totalElements || 0);
+      setTotalSolicitacoes(resItens.data.page?.totalElements ?? 0);
 
       let resDoacoes;
       if (isDoador) {
@@ -37,7 +37,7 @@ function Home() {
       } else {
         resDoacoes = await api.get("/doacoes?size=1");
       }
-      setTotalDoacoes(resDoacoes.data.totalElements || 0);
+      setTotalDoacoes(resDoacoes.data.page?.totalElements ?? 0);
 
     } catch (error) {
       console.error("Erro ao buscar estatísticas:", error);

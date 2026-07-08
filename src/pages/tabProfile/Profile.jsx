@@ -116,8 +116,9 @@ function Profile() {
     }
   };
 
+  const apiBase = new URL(import.meta.env.VITE_API_URL).origin;
   const avatarSrc = user?.avatarUrl
-    ? `${import.meta.env.VITE_API_URL}${user.avatarUrl}`
+    ? `${apiBase}${user.avatarUrl}`
     : profile01;
 
   return (
@@ -131,6 +132,7 @@ function Profile() {
           <div className="relative inline-block">
             <img
               src={avatarSrc}
+              onError={(e) => { e.currentTarget.src = profile01; }}
               className={`h-30 -mt-16 mb-4 ml-4 md:h-40 md:-mt-20 md:ml-20 md:mb-10 ${
                 !isDoador ? "rounded-full border-2 border-[var(--base-04)]" : ""
               }`}

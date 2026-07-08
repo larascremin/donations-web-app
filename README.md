@@ -1,65 +1,83 @@
 # 🍼 donations-web-app
 
-Um aplicativo web para facilitar o gerenciamento e recebimento de doações.
+Aplicativo web para conectar doadores e instituições, facilitando a solicitação, o gerenciamento e o acompanhamento de doações.
 
+Frontend em React + Vite que consome a [API do backend](https://github.com/Danielarceeno) (Spring Boot, autenticação JWT).
 
 ## Funcionalidades
 
-- Cadastro de doações e doadores
-- Visualização e filtragem de doações recebidas
-- Interface intuitiva para acompanhar o histórico de doações
+- Autenticação (login, cadastro, recuperação de senha) com JWT
+- Doadores: buscar solicitações de doação e confirmar/cancelar doações feitas
+- Instituições: criar/editar solicitações, listar e confirmar doações recebidas
+- Perfil de usuário com upload de avatar
+- PWA (instalável, com service worker)
 
 ## Requisitos
 
-- Node.js (versão recomendada: 14.x ou superior)
-- npm (gerenciador de pacotes do Node.js)
+- Node.js 20+
+- npm
 
 ## Instalação
 
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/larascremin/donations-web-app.git
-   ```
-2. Acesse o diretório do projeto:
-   ```bash
-   cd donations-web-app
-   ```
-3. Instale as dependências:
-   ```bash
-   npm install
-   ```
+```bash
+git clone https://github.com/larascremin/donations-web-app.git
+cd donations-web-app
+npm install
+```
 
-## Como Usar
+## Configuração de ambiente
 
-1. Inicie o servidor de desenvolvimento:
-   ```bash
-   npm start
-   ```
-2. Acesse o aplicativo em [http://localhost:3000](http://localhost:3000) no seu navegador.
+Copie `.env.example` para `.env` e ajuste conforme seu backend:
 
-## Estrutura do Projeto
+```bash
+cp .env.example .env
+```
+
+```properties
+# URL base da API (backend Spring Boot)
+VITE_API_URL=http://localhost:8080/api
+```
+
+O backend precisa estar rodando e aceitando CORS da origem do frontend (ver `SecurityConfig` do backend).
+
+## Como usar
+
+```bash
+npm run dev       # servidor de desenvolvimento (http://localhost:5173)
+npm run build     # build de produção em dist/
+npm run preview   # serve o build de produção localmente
+npm run lint      # ESLint
+npm run test      # roda a suíte de testes (Vitest)
+```
+
+## Estrutura do projeto
 
 ```
 donations-web-app/
-│
-├── public/                  # Arquivos estáticos públicos (index.html, favicon, imagens)
-│   └── ...
-│
-├── src/                     # Código-fonte principal da aplicação
-│   ├── assets/              # Imagens, fontes e outros recursos estáticos
-│   ├── components/          # Componentes reutilizáveis da interface (ex: Botões, Inputs)
-│   ├── pages/               # Páginas/views principais da aplicação (Dashboard, Cadastro, etc.)
-│   ├── services/            # Serviços de integração com APIs e lógica de negócio
-│   ├── styles/              # Estilos globais e temas CSS/SASS
-│   ├── utils/               # Funções utilitárias e helpers
-│   └── App.js               # Componente principal da aplicação
-│
-├── .env                     # Variáveis de ambiente (se necessário)
-├── .gitignore               # Arquivos/pastas ignorados pelo Git
-├── package.json             # Dependências, scripts e configurações do projeto
-├── README.md                # Documentação do projeto
-└── ...
+├── src/
+│   ├── assets/          # imagens e vetores
+│   ├── components/      # componentes reutilizáveis (NavigationBar, PasswordInput, ProtectedRoute...)
+│   ├── hooks/            # UserContext (estado de autenticação global)
+│   ├── pages/
+│   │   ├── auth/         # login, cadastro, reset de senha
+│   │   ├── tabHome/      # dashboard inicial
+│   │   ├── tabFinder/    # busca de solicitações de doação
+│   │   ├── tabDonation/  # doações/solicitações do usuário logado
+│   │   └── tabProfile/   # perfil do usuário
+│   ├── services/         # api.js (cliente axios + interceptors JWT), logger.js
+│   └── styles/            # CSS global e variáveis de tema
+├── .env.example
+├── vite.config.js
+└── .github/workflows/ci.yml
 ```
+
+## Autenticação
+
+O token JWT retornado por `POST /auth/login` é salvo em `localStorage` e injetado automaticamente em todas as requisições pelo interceptor do axios (`src/services/api.js`). Um 401 na resposta limpa a sessão e desloga o usuário. Rotas autenticadas usam `ProtectedRoute` (`src/components/ProtectedRoute.jsx`), que redireciona para `/auth` quando não há usuário logado.
+
+## Testes e CI
+
+Testes com Vitest + React Testing Library (`npm run test`). O workflow `.github/workflows/ci.yml` roda lint, testes e build a cada push/PR para `main`.
 
 ## Contribuindo
 
@@ -72,7 +90,3 @@ donations-web-app/
 ## Licença
 
 Este projeto está sob a licença MIT.
-
----
-
-Se precisar de instruções mais específicas (por exemplo, detalhes sobre autenticação ou integração com APIs), por favor, me avise!

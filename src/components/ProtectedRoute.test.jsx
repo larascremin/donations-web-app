@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { describe, expect, it } from "vitest";
-import { UserContext } from "../hooks/UserContext";
+import { UserContext } from "../context/UserContext";
 import ProtectedRoute from "./ProtectedRoute";
 
 function renderWithUser(userValue) {

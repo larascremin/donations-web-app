@@ -9,7 +9,7 @@ import {
   SignOut,
 } from "@phosphor-icons/react";
 import logo from "../assets/images/logo.svg";
-import { UserContext } from "../hooks/UserContext";
+import { UserContext } from "../context/UserContext";
 
 function NavigationBar() {
   const navigate = useNavigate();

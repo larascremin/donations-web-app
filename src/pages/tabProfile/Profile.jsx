@@ -5,7 +5,7 @@ import PasswordInput from "../../components/PasswordInput";
 import profile01 from "../../assets/images/cj-profile-01.svg";
 import { Camera } from "@phosphor-icons/react";
 import { toast } from "react-toastify";
-import { UserContext } from "../../hooks/UserContext";
+import { UserContext } from "../../context/UserContext";
 import api from "../../services/api";
 import { logger } from "../../services/logger";
 
@@ -51,6 +51,9 @@ function Profile() {
       }
     };
     fetchUserProfile();
+    // Deve rodar apenas uma vez ao montar: fetchUserProfile chama setUser,
+    // entao incluir isDoador/setUser como dependencias causaria um loop.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleUpdate = async (e) => {

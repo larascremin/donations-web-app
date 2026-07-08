@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
 import { useMediaQuery } from "react-responsive";
 import { MagnifyingGlass, X, MapPinLine, Funnel } from "@phosphor-icons/react";
 import NavigationBar from "../../components/NavigationBar";
@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import DonationCard from "../../components/DonationCard";
 import { categoryColors, categoryIcons } from "../../services/Variables";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../../hooks/UserContext";
+import { UserContext } from "../../context/UserContext";
 import api from "../../services/api";
 import { logger } from "../../services/logger";
 
@@ -38,12 +38,7 @@ function Finder() {
     return () => { document.body.style.overflow = "auto"; };
   }, [selectedDonation]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => fetchDonations(0), 400);
-    return () => clearTimeout(timer);
-  }, [searchTerm, categoria, cidade, dataFrom, dataTo]);
-
-  const fetchDonations = async (pageNum) => {
+  const fetchDonations = useCallback(async (pageNum) => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
@@ -89,7 +84,12 @@ function Finder() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, categoria, cidade, dataFrom, dataTo]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => fetchDonations(0), 400);
+    return () => clearTimeout(timer);
+  }, [fetchDonations]);
 
   const handleOpenDonation = (d) => {
     setSelectedDonation(d);

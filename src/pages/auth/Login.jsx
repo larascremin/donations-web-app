@@ -4,7 +4,7 @@ import { useMediaQuery } from "react-responsive";
 import { toast } from "react-toastify";
 import DynamicLogin from "../../components/DynamicLogin";
 import PasswordInput from "../../components/PasswordInput";
-import { UserContext } from "../../hooks/UserContext";
+import { UserContext } from "../../context/UserContext";
 
 function Login() {
   const navigate = useNavigate();

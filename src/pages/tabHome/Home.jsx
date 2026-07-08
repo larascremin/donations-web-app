@@ -1,11 +1,11 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import NavigationBar from "../../components/NavigationBar";
 import home01 from "../../assets/images/cj-home-01.svg";
 import home02 from "../../assets/images/cj-home-02.svg";
 import home05 from "../../assets/images/cj-home-05.svg";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../../hooks/UserContext";
+import { UserContext } from "../../context/UserContext";
 import api from "../../services/api";
 import { logger } from "../../services/logger";
 
@@ -21,13 +21,7 @@ function Home() {
   const nome = user?.nomeCompleto?.split(" ")[0] || "Visitante";
   const isDoador = user?.tipo === "DOADOR";
 
-  useEffect(() => {
-    if (user) {
-      fetchStats();
-    }
-  }, [user]);
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       const resItens = await api.get("/itens?size=1");
       setTotalSolicitacoes(resItens.data.page?.totalElements ?? 0);
@@ -45,7 +39,13 @@ function Home() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [isDoador]);
+
+  useEffect(() => {
+    if (user) {
+      fetchStats();
+    }
+  }, [user, fetchStats]);
 
   return (
     <div className="flex">

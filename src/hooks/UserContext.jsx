@@ -1,8 +1,7 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import api from "../services/api";
 import { logger } from "../services/logger";
-
-export const UserContext = createContext({});
+import { UserContext } from "../context/UserContext";
 
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);

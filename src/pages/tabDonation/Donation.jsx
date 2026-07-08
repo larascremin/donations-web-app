@@ -4,9 +4,9 @@ import { Check, X, PencilSimple } from "@phosphor-icons/react";
 import donation01 from "../../assets/images/cj-donation-01.svg";
 import donation02 from "../../assets/images/cj-donation-02.svg";
 import { useNavigate } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { UserContext } from "../../hooks/UserContext";
+import { UserContext } from "../../context/UserContext";
 import api from "../../services/api";
 import { logger } from "../../services/logger";
 
@@ -19,11 +19,7 @@ function Donation() {
   const [statusFilter, setStatusFilter] = useState("");
   const isDonator = user?.tipo === "DOADOR";
 
-  useEffect(() => {
-    if (user) fetchData();
-  }, [user]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const response = isDonator
@@ -36,7 +32,11 @@ function Donation() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [isDonator]);
+
+  useEffect(() => {
+    if (user) fetchData();
+  }, [user, fetchData]);
 
   const formatDate = (dateString) => {
     if (!dateString) return "---";

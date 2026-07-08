@@ -8,6 +8,7 @@ import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { UserContext } from "../../hooks/UserContext";
 import api from "../../services/api";
+import { logger } from "../../services/logger";
 
 function Donation() {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ function Donation() {
         : await api.get("/itens/me");
       setItemsList(response.data.content || []);
     } catch (error) {
-      console.error("Erro ao buscar dados:", error);
+      logger.error("Erro ao buscar dados:", error);
       toast.error("Não foi possível carregar as doações.");
     } finally {
       setLoading(false);
@@ -83,7 +84,7 @@ function Donation() {
         toast.success("Doação confirmada!");
         fetchData();
       } catch (error) {
-        console.error("Erro ao confirmar:", error);
+        logger.error("Erro ao confirmar:", error);
         toast.error("Erro ao confirmar doação.");
       }
     });
@@ -100,7 +101,7 @@ function Donation() {
         setItemsList((prev) => prev.filter((item) => item.id !== id));
         toast.success(isDonator ? "Doação cancelada." : "Solicitação excluída.");
       } catch (error) {
-        console.error("Erro ao deletar:", error);
+        logger.error("Erro ao deletar:", error);
         if (error.response?.status === 403) {
           toast.error("Você não pode excluir a solicitação de outra instituição.");
         } else {

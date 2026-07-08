@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import DynamicLogin from "../../components/DynamicLogin";
 import PasswordInput from "../../components/PasswordInput";
 import api from "../../services/api";
+import { logger } from "../../services/logger";
 
 const getPasswordStrength = (password) => {
   if (!password) return null;
@@ -48,7 +49,7 @@ function Register() {
       toast.success("Conta criada com sucesso! Faça login.");
       navigate("/auth");
     } catch (err) {
-      console.error(err);
+      logger.error(err);
       toast.error("Não foi possível criar a conta. Verifique os dados e tente novamente.");
     } finally {
       setLoading(false);

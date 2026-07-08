@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import DynamicLogin from "../../components/DynamicLogin";
 import PasswordInput from "../../components/PasswordInput";
 import api from "../../services/api";
+import { logger } from "../../services/logger";
 
 function NewPassword() {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ function NewPassword() {
       toast.success("Senha redefinida com sucesso! Faça login com a nova senha.");
       setTimeout(() => navigate("/auth"), 2000);
     } catch (error) {
-      console.error("Erro ao redefinir senha:", error);
+      logger.error("Erro ao redefinir senha:", error);
       toast.error(error.response?.data?.message || "Erro ao redefinir senha. O link pode ter expirado.");
     } finally {
       setLoading(false);

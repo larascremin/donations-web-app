@@ -8,6 +8,7 @@ import { categoryColors, categoryIcons } from "../../services/Variables";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../hooks/UserContext";
 import api from "../../services/api";
+import { logger } from "../../services/logger";
 
 const PAGE_SIZE = 10;
 
@@ -83,7 +84,7 @@ function Finder() {
       setTotalPages(tp);
       setPage(pageNum);
     } catch (error) {
-      console.error("Erro ao buscar doações:", error);
+      logger.error("Erro ao buscar doações:", error);
       toast.error("Erro ao carregar solicitações.");
     } finally {
       setLoading(false);
@@ -112,7 +113,7 @@ function Finder() {
       setSelectedDonation(null);
       navigate("/donation");
     } catch (error) {
-      console.error("Erro ao doar:", error);
+      logger.error("Erro ao doar:", error);
       toast.error(error.response?.data?.message || "Erro ao registrar doação.");
     } finally {
       setDonating(false);

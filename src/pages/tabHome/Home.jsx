@@ -7,6 +7,7 @@ import home05 from "../../assets/images/cj-home-05.svg";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../hooks/UserContext";
 import api from "../../services/api";
+import { logger } from "../../services/logger";
 
 function Home() {
   const { user } = useContext(UserContext);
@@ -40,7 +41,7 @@ function Home() {
       setTotalDoacoes(resDoacoes.data.page?.totalElements ?? 0);
 
     } catch (error) {
-      console.error("Erro ao buscar estatísticas:", error);
+      logger.error("Erro ao buscar estatísticas:", error);
     } finally {
       setLoading(false);
     }

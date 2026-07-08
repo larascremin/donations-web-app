@@ -4,6 +4,7 @@ import NavigationBar from "../../components/NavigationBar";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../../services/api";
+import { logger } from "../../services/logger";
 
 function CreateDonation() {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ function CreateDonation() {
 
       setTimeout(() => navigate("/donation"), 1500);
     } catch (err) {
-      console.error("Erro ao salvar solicitação:", err);
+      logger.error("Erro ao salvar solicitação:", err);
       toast.error(err.response?.data?.message || "Erro ao salvar solicitação. Tente novamente.");
     } finally {
       setLoading(false);

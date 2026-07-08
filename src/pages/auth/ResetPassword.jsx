@@ -4,6 +4,7 @@ import { useMediaQuery } from "react-responsive";
 import { toast } from "react-toastify";
 import DynamicLogin from "../../components/DynamicLogin";
 import api from "../../services/api";
+import { logger } from "../../services/logger";
 
 function Reset() {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -19,7 +20,7 @@ function Reset() {
       toast.success("Se o e-mail estiver cadastrado, você receberá um link de recuperação em instantes.");
       setEmail("");
     } catch (error) {
-      console.error("Erro ao solicitar reset:", error);
+      logger.error("Erro ao solicitar reset:", error);
       toast.error(error.response?.data?.message || "Erro ao tentar enviar e-mail. Tente novamente.");
     } finally {
       setLoading(false);

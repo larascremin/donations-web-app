@@ -7,6 +7,7 @@ import { Camera } from "@phosphor-icons/react";
 import { toast } from "react-toastify";
 import { UserContext } from "../../hooks/UserContext";
 import api from "../../services/api";
+import { logger } from "../../services/logger";
 
 function Profile() {
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -45,7 +46,7 @@ function Profile() {
           setCnpj(userData.cnpj || "");
         }
       } catch (error) {
-        console.error("Erro ao carregar perfil:", error);
+        logger.error("Erro ao carregar perfil:", error);
         toast.error("Erro ao carregar perfil.");
       }
     };
@@ -79,7 +80,7 @@ function Profile() {
       toast.success("Perfil atualizado com sucesso!");
       setPassword("");
     } catch (error) {
-      console.error("Erro ao atualizar:", error);
+      logger.error("Erro ao atualizar:", error);
       const errors = error.response?.data?.errors;
       toast.error(
         errors?.length

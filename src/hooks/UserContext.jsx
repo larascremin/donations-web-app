@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import api from "../services/api";
+import { logger } from "../services/logger";
 
 export const UserContext = createContext({});
 
@@ -15,8 +16,8 @@ export function UserProvider({ children }) {
       try {
         setUser(JSON.parse(storedUser));
         api.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
-      } catch (e) {
-        console.warn("Dados de usuário corrompidos no localStorage. Limpando...");
+      } catch {
+        logger.warn("Dados de usuário corrompidos no localStorage. Limpando...");
         localStorage.removeItem("user");
         localStorage.removeItem("token");
       }
